@@ -17,15 +17,17 @@ npm i @nestjs/config --save // //
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === "dev" ? ".dev.env" : ".test.env",
+      envFilePath: process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.test",
+      ignoreEnvFile: process.env.NODE_ENV === "prod", //production 할때만 env 파일을 무시
+
     }),
     TypeOrmModule.forRoot({
       type: "postgres",
-      host: "localhost",
-      port: 5432,
-      username: "postgres",
-      password: "12345qwert",
-      database: "Nuber-eats",
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT, //string을 number로 바꿔줄때 +를 붙이자
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       synchronize: true,
       logging: true,
     }),
