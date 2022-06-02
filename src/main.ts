@@ -8,3 +8,8 @@ async function bootstrap() {
   await app.listen(3000);
 }
 bootstrap();
+
+/* typescript나 NestJS의 DB와 통신하기 위해선 ORM을 사용할 필요가 있다  
+
+Object Relational mapping(객체 관계 매핑)
+*/
