@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import * as Joi from "joi";
 import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RestaurantsModule } from './restaurants/restaurants.module';
@@ -13,13 +14,24 @@ Configuration
 Nest에서 이 기술을 사용하는 좋은 방법은 적절한 .env 파일을 로드하는 ConfigService를 노출하는 ConfigModule을 만드는 것입니다.
 npm i @nestjs/config --save // //
 */
+
+/* Joi = JavaScript용 가장 강력한 스키마 설명 언어 및 데이터 유효성 검사기. 
+joi는 객체마다 유효성 검사를 한다
+*/
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.test",
       ignoreEnvFile: process.env.NODE_ENV === "prod", //production 할때만 env 파일을 무시
-
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string().valid('dev', 'prod').required(),
+        DB_HOST: Joi.string().required(),
+        DB_PORT: Joi.string().required(),
+        DB_USERNAME: Joi.string().required(),
+        DB_PASSWORD: Joi.string().required(),
+        DB_NAME: Joi.string().required(),
+      })
     }),
     TypeOrmModule.forRoot({
       type: "postgres",
