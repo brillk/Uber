@@ -26,6 +26,10 @@ export class Restaurant {
     @Column()
     ownerName: string;
 
+    @Field(type => String)
+    @Column()
+    categoryName: string;
+
 }
 /* code first 접근 방식을 사용하여 TypeScript 클래스를 사용하여 스키마를 정의하고 
 TypeScript 데코레이터를 사용하여 

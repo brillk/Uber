@@ -14,12 +14,14 @@ export class RestaurantResolver {
     }
   
   @Mutation(returns => Boolean)
-  createRestaurant(
-    //사실 원한다면 argument를 많이 만들 순 있다
-    // dto로도 만들 수 있다. data transfer object - 대체 가능
-    @Args() RestaurantInput: createRestaurantDto
-    //Args안의 내용을 없애면 에러가 나지만 바꾸는 방법이 있다
-  ): boolean {
-    return true;
+  async createRestaurant(
+    @Args() createRestaurantDto: createRestaurantDto): Promise<boolean> { // 주의: async을 쓸때, Promise와 value를 써야함
+    try{
+      await this.restaurantService.createRestaurant(createRestaurantDto);
+      return true;
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
   }
 }
