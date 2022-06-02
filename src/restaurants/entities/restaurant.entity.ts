@@ -1,5 +1,5 @@
 import {Field, ObjectType} from "@nestjs/graphql";
-import { IsBoolean, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 //restaurant를 위한 object type을 보여준다
@@ -14,10 +14,12 @@ export class Restaurant {
     @Field(type => String)
     @Column()
     @IsString()
+    @Length(5)
     name: string;
 
-    @Field(type => Boolean)
-    @Column()
+    @Field(type => Boolean, {nullable: true})
+    @Column({default: true}) // 기본값 설정 그리고 required가 아니다
+    @IsOptional()
     @IsBoolean()
     isVegan: boolean;
 
@@ -30,11 +32,6 @@ export class Restaurant {
     @Column()
     @IsString()
     ownerName: string;
-
-    @Field(type => String)
-    @Column()
-    @IsString()
-    categoryName: string;
 
 }
 /* code first 접근 방식을 사용하여 TypeScript 클래스를 사용하여 스키마를 정의하고 

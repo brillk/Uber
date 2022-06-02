@@ -4,7 +4,7 @@ import { Restaurant } from '../entities/restaurant.entity';
 // ArgsType - 아래의 정의된 것들을 분리된 argument로써 정의할 수 있다
 //validator 유효성 검사를 하려면 pipeline을 설치해야 하는 걸 잊지말자
 
-/* Mapped types 를 이용해서 원하는 객체만 받자*/
+/* Mapped types를 이용해서 원하는 객체만 받자*/
 @InputType() 
 export class createRestaurantDto extends OmitType(Restaurant, ["id"], InputType) {} 
 // restaurant에서 id를 제외한 모든걸 받고 싶다 
