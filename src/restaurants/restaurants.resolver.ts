@@ -1,5 +1,6 @@
 import { Query, Resolver, Args, Mutation } from '@nestjs/graphql';
-import { createRestaurantDto } from './dtos/create-restaurant.dto';
+import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
+import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantService } from './restaurants.service';
 
@@ -15,7 +16,7 @@ export class RestaurantResolver {
   
   @Mutation(returns => Boolean)
   async createRestaurant(
-    @Args('input') createRestaurantDto: createRestaurantDto): Promise<boolean> { // 주의: async을 쓸때, Promise와 value를 써야함
+    @Args('input') createRestaurantDto: CreateRestaurantDto): Promise<boolean> { // 주의: async을 쓸때, Promise와 value를 써야함
     try{
       await this.restaurantService.createRestaurant(createRestaurantDto);
       return true;
@@ -24,4 +25,9 @@ export class RestaurantResolver {
       return false;
     }
   }
+
+  @Mutation(returns => Boolean)
+  async updateRestaurant(@Args() UpdateRestaurantDto: UpdateRestaurantDto 
+  ) { return true};
+  // 아이디를 확인해서 업뎃을 시킨다
 }

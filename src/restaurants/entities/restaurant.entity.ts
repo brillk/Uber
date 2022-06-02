@@ -28,10 +28,6 @@ export class Restaurant {
     @IsString()
     address: string;
 
-    @Field(type => String)
-    @Column()
-    @IsString()
-    ownerName: string;
 
 }
 /* code first 접근 방식을 사용하여 TypeScript 클래스를 사용하여 스키마를 정의하고 
