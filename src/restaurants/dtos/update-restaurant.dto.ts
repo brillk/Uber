@@ -2,11 +2,11 @@ import { InputType, ArgsType, PartialType, Field } from '@nestjs/graphql';
 import {CreateRestaurantDto} from './create-restaurant.dto';
 
 @InputType()
-export class UpdateRestaurantInputType extends PartialType(CreateRestaurantDto) {}
+class UpdateRestaurantInputType extends PartialType(CreateRestaurantDto) {}
 
 //resolver, mutation에 어떤 restaurant을 수정할건지 알려주기 위해 id를 보내야 함
 
-@ArgsType()
+@InputType()
 export class UpdateRestaurantDto {
     @Field(type => Number)
     id: number;

@@ -27,7 +27,15 @@ export class RestaurantResolver {
   }
 
   @Mutation(returns => Boolean)
-  async updateRestaurant(@Args() UpdateRestaurantDto: UpdateRestaurantDto 
-  ) { return true};
-  // 아이디를 확인해서 업뎃을 시킨다
+  async updateRestaurant(
+    @Args("input") updateRestaurantDto: UpdateRestaurantDto 
+  ): Promise<boolean> { 
+    try {
+      await this.restaurantService.updateRestaurant(updateRestaurantDto);
+      return true;
+    } catch(e) {
+      console.log(e);
+      return false;
+    }
+  };
 }
