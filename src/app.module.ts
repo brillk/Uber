@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
-import { User } from './users/entities/users.entity';
+import { User } from './users/entities/user.entity';
 
 // 항상 GraphQL을 만들때는 resolvers와 query를 생성해야 한다
 // env파일을 test, production, development로 나눠서 생성
