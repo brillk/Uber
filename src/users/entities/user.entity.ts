@@ -5,6 +5,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { BeforeInsert, Column,Entity } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { InternalServerErrorException } from '@nestjs/common';
+import { IsEmail, IsEnum, IsString } from 'class-validator';
 
 enum UserRole {
     Client,
@@ -21,6 +22,7 @@ export class User extends CoreEntity{
     // 뭐랄까 html의 마크업인가?  @Column = save될때, DB에 지속적으로 있는다.
     @Column()
     @Field(type => String)
+    @IsEmail()
     email: string
 
     @Column()
@@ -29,6 +31,7 @@ export class User extends CoreEntity{
 
     @Column({type: "enum", enum: UserRole})
     @Field(type => UserRole)
+    @IsEnum(UserRole)
     role: UserRole
 
     @BeforeInsert()
