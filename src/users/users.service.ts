@@ -9,17 +9,18 @@ export class UsersService {
         @InjectRepository(User) private readonly users: Repository<User>
     ) {}
 
-    async createAccount({email, password, role}: CreateAccountInput) :Promise<string | undefined>{
+    async createAccount({email, password, role}: CreateAccountInput) :Promise<{ok: boolean, error ?: string}>{
         try {
             const exists = await this.users.findOne({email});
             if(exists) {
                 //존재하는 계정이기에 에러를 뱉는다
-                return "The User is already Exist";
+                return {ok: false, error: "The User is already Exist"};
             }
             //계정이 없다면 만든다
             await this.users.save(this.users.create({email, password, role}));
+            return {ok: true};
         } catch(e) {
-            return "Couldn't create account"
+            return {ok: false, error: "Couldn't create account"}
         }
         //check new user
         // create user & hash the password
