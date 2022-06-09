@@ -1,10 +1,12 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { JwtMiddleware } from './jwt/jwt.middleware';
 /* AppModule은 main.ts로 import 되는 유일한 모듈이다 */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe()); //pipelines
+  app.use(JwtMiddleware); // 아예 이렇게 서버에 그냥 미들웨어나 넣자 
   await app.listen(3000);
 }
 bootstrap();

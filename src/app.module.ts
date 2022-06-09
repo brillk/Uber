@@ -2,10 +2,8 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 import * as Joi from "joi";
 import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { RestaurantsModule } from './restaurants/restaurants.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
-import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
@@ -64,18 +62,8 @@ token(id)을 유저가 볼수도 있다.
     }),
     UsersModule, // staic module 어떠한 설정이 되어 있지 않다
     CommonModule,
-   
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).forRoutes({
-      path: "/graphql",
-      method: RequestMethod.POST,
-      // 현재 미들웨어를 forRoutes()를 통해서 /graphql 경로에 
-      // method가 POST인 경우만 적용시킨다
-    })
-  }
-}
+export class AppModule {}
