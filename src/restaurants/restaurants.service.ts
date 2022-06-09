@@ -15,7 +15,8 @@ export class RestaurantService {
         return this.restaurants.find();
     }
 
-    createRestaurant(createRestaurantDto: CreateRestaurantDto): Promise<Restaurant> {
+    createRestaurant(createRestaurantDto: CreateRestaurantDto
+        ): Promise<Restaurant> {
         //create와 save의 차이점 in TypeORM
         // create만 하면 객체만 만들 뿐 DB에 저장하진 않는다. 
         const newRestaurant = this.restaurants.create(createRestaurantDto) //create 리턴 타입이 Restaurant

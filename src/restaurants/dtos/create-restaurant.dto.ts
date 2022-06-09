@@ -6,7 +6,7 @@ import { Restaurant } from '../entities/restaurant.entity';
 
 /* Mapped types를 이용해서 원하는 객체만 받자*/
 @InputType() 
-export class CreateRestaurantDto extends OmitType(Restaurant, ["id"], InputType) {} 
+export class CreateRestaurantDto extends OmitType(Restaurant, ["id"]) {} 
 // restaurant에서 id를 제외한 모든걸 받고 싶다 
 //  GraphQLError: Input Object type createRestaurantDto must define one or more fields.
 // 에러가 나는 이유는 부모(Restaurant)의 타입과 자식(createRestaurantDto)의 타입이 달라서

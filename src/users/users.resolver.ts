@@ -1,4 +1,6 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateAccountInput, CreateAccountOutput } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
@@ -17,12 +19,15 @@ export class UsersResolver {
 
     //첫번째 Mutation
     @Mutation(returns => CreateAccountOutput)
-    async createAccount(@Args("input") createAccountInput: CreateAccountInput) : Promise<CreateAccountOutput>{
+    async createAccount(
+        @Args("input") createAccountInput: CreateAccountInput
+        ) : Promise<CreateAccountOutput>{
         try {
-            return this.usersService.createAccount(createAccountInput);
-        } catch(e) {
+            const {ok, error} = await this.usersService.createAccount(createAccountInput);
+            return {ok, error,};
+        } catch(error) {
             return {
-                error: e,
+                error,
                 ok: false,
             }
         }
@@ -31,17 +36,22 @@ export class UsersResolver {
     @Mutation(returns => LoginOutput)
     async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
         try {
-            return this.usersService.login(loginInput);
-        } catch(e) {
+            const {ok, error, token} = await this.usersService.login(loginInput);
+            return {ok, error, token};
+        } catch(error) {
             return {
                 ok: false,
-                
+                error,
             }
         }
     }
 
     @Query(returns => User)
-    me(@Context() context) { 
-        console.log(context); 
-    }
+    @UseGuards(AuthGuard)
+    me() {}
+    /*@UseGuard() (Binding guards)
+    파이프 및 예외 필터와 마찬가지로 가드는 컨트롤러 범위, 
+    메서드 범위 또는 전역 범위일 수 있습니다. 
+    아래에서 @UseGuards() 데코레이터를 사용하여 컨트롤러 범위 가드를 설정합니다. 
+    https://docs.nestjs.com/guards#binding-guards*/
 }

@@ -1,8 +1,9 @@
-import {Field, ObjectType} from "@nestjs/graphql";
+import {Field, InputType, ObjectType} from "@nestjs/graphql";
 import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 //restaurant를 위한 object type을 보여준다
+@InputType({isAbstract: true})
 @ObjectType()
 @Entity()
 export class Restaurant {

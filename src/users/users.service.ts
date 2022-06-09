@@ -14,7 +14,8 @@ export class UsersService {
         private readonly jwtService: JwtService,
     ) {}
 
-    async createAccount({email, password, role}: CreateAccountInput) :Promise<{ok: boolean, error ?: string}>{
+    async createAccount({email, password, role
+    }: CreateAccountInput) :Promise<{ok: boolean, error ?: string}>{
         try {
             const exists = await this.users.findOne({email});
             if(exists) {
@@ -60,10 +61,10 @@ export class UsersService {
                 ok: true,
                 token,
             }
-        } catch(e) {
+        } catch(error) {
             return {
                 ok: false,
-                error: "Error Occur",
+                error,
             }
         }
     }
