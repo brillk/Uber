@@ -40,7 +40,7 @@ token(id)을 유저가 볼수도 있다.
           DB_USERNAME: Joi.string().required(),
           DB_PASSWORD: Joi.string().required(),
           DB_NAME: Joi.string().required(),
-          SECRET_KEY: Joi.string().required(),
+          PRIVATE_KEY: Joi.string().required(),
       })
     }),
     TypeOrmModule.forRoot({
@@ -58,7 +58,9 @@ token(id)을 유저가 볼수도 있다.
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
-    JwtModule.forRoot(),
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
+    }),
     UsersModule, // staic module 어떠한 설정이 되어 있지 않다
     CommonModule,
    
