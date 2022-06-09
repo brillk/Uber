@@ -58,9 +58,9 @@ token(id)을 유저가 볼수도 있다.
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
+    JwtModule.forRoot(),
     UsersModule, // staic module 어떠한 설정이 되어 있지 않다
     CommonModule,
-    JwtModule,
    
   ],
   controllers: [],
