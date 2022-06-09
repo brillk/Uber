@@ -9,6 +9,7 @@ import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 // 항상 GraphQL을 만들때는 resolvers와 query를 생성해야 한다
 // env파일을 test, production, development로 나눠서 생성
@@ -53,12 +54,13 @@ token(id)을 유저가 볼수도 있다.
       logging: process.env.NODE_ENV !== 'prod',
       entities: [User],
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRoot<ApolloDriverConfig>({ // dynamic module 설정이 되있다
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
-    UsersModule,
+    UsersModule, // staic module 어떠한 설정이 되어 있지 않다
     CommonModule,
+    JwtModule,
    
   ],
   controllers: [],
