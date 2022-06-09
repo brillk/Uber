@@ -21,20 +21,25 @@ npm i @nestjs/config --save // //
 
 /* Joi = JavaScript용 가장 강력한 스키마 설명 언어 및 데이터 유효성 검사기. 
 joi는 객체마다 유효성 검사를 한다
+
+token(id)을 유저가 볼수도 있다. 
 */
 @Module({
   imports: [
-    ConfigModule.forRoot({
+    ConfigModule.forRoot({ //nestJS의 장점: 모듈을 설치하고, 설정가능
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.test",
-      ignoreEnvFile: process.env.NODE_ENV === "prod", //production 할때만 env 파일을 무시
+      envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
+      ignoreEnvFile: process.env.NODE_ENV === 'prod', //production 할때만 env 파일을 무시
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid('dev', 'prod').required(),
-        DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.string().required(),
-        DB_USERNAME: Joi.string().required(),
-        DB_PASSWORD: Joi.string().required(),
-        DB_NAME: Joi.string().required(),
+        NODE_ENV: Joi.string()
+          .valid('dev', 'prod')
+          .required(),
+          DB_HOST: Joi.string().required(),
+          DB_PORT: Joi.string().required(),
+          DB_USERNAME: Joi.string().required(),
+          DB_PASSWORD: Joi.string().required(),
+          DB_NAME: Joi.string().required(),
+          SECRET_KEY: Joi.string().required(),
       })
     }),
     TypeOrmModule.forRoot({
@@ -45,7 +50,7 @@ joi는 객체마다 유효성 검사를 한다
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== "prod",
-      logging: true,
+      logging: process.env.NODE_ENV !== 'prod',
       entities: [User],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
