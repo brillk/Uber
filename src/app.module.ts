@@ -56,6 +56,11 @@ token(id)을 유저가 볼수도 있다.
     GraphQLModule.forRoot<ApolloDriverConfig>({ // dynamic module 설정이 되있다
       driver: ApolloDriver,
       autoSchemaFile: true,
+      context: ({req}) => ({user: req['user']}),
+      /*Context
+          각 request에 대해 request context를 사용할 수 있습니다. 
+          context가 함수로 정의되면 각 request마다 호출되고
+          req 속성에 request 객체를 받습니다. */
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
@@ -68,6 +73,6 @@ token(id)을 유저가 볼수도 있다.
 })
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).forRoutes({path: '/graphql', method: RequestMethod.ALL});
+    consumer.apply(JwtMiddleware).forRoutes({path: '/graphql', method: RequestMethod.POST});
   }
 }
