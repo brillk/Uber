@@ -11,7 +11,6 @@ import { JwtService } from 'src/jwt/jwt.service';
 export class UsersService {
     constructor(
         @InjectRepository(User) private readonly users: Repository<User>,
-        private readonly config: ConfigService,
         private readonly jwtService: JwtService,
     ) {}
 
@@ -55,11 +54,11 @@ export class UsersService {
                 }
             }
             //이제 할일을 지정해주자
-            const token = jwt.sign({id: user.id}, this.config.get('SECRET_KEY'));
+            const token = this.jwtService.sign(user.id);
             // token안에 많은 정보가 아닌 iD정도만 넣어주면 된다
             return {
                 ok: true,
-                token: "la",
+                token,
             }
         } catch(e) {
             return {
