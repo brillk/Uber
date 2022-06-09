@@ -66,4 +66,8 @@ token(id)을 유저가 볼수도 있다.
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).forRoutes({path: '/graphql', method: RequestMethod.ALL});
+  }
+}

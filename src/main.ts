@@ -1,15 +1,16 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { JwtMiddleware } from './jwt/jwt.middleware';
 /* AppModule은 main.ts로 import 되는 유일한 모듈이다 */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe()); //pipelines
-  app.use(JwtMiddleware); // 아예 이렇게 서버에 그냥 미들웨어나 넣자 
+  app.useGlobalPipes(new ValidationPipe()); //pipelines 
   await app.listen(3000);
 }
 bootstrap();
+
+// middleware를 어디서든지 쓰고 싶다면 functional middleware이어야 하고,
+// class middleware를 사용하려면 app.module에서 해야한다
 
 /* typescript나 NestJS의 DB와 통신하기 위해선 ORM을 사용할 필요가 있다  
 
