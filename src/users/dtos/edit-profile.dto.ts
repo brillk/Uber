@@ -9,3 +9,6 @@ export class EditProfileOutput extends CoreOutput {}
 export class EditProfileInput extends PartialType(
     PickType(User, ["email", "password"]),
     ) {}  
+
+//update()
+//엔티티를 부분적으로 업데이트합니다. 엔티티는 주어진 조건으로 찾을 수 있습니다. 

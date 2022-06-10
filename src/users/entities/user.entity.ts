@@ -2,7 +2,7 @@
 
 import { Field, InputType, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { BeforeInsert, Column,Entity } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column,Entity } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsEmail, IsEnum } from 'class-validator';
@@ -35,6 +35,7 @@ export class User extends CoreEntity{
     role: UserRole;
 
     @BeforeInsert()
+    @BeforeUpdate()
     async hashPassword(): Promise<void> {
         try{
             this.password = await bcrypt.hash(this.password, 10);
@@ -44,6 +45,11 @@ export class User extends CoreEntity{
             throw new InternalServerErrorException();
         }
     }
+    /*
+        save()메서드를 사용하여 업데이트되기 전에 실행되는 데코레이터이다.
+        엔티티에 메소드를 정의하고 @BeforeUpdate() 데코레이터를 사용하면 
+        TypeORM이 기존 엔티티를 repository/manager 
+        save을 사용하여 업데이트되기 전에 이를 호출합니다. */
 
     async checkPassword(aPassword: string): Promise<boolean> {
         try{

@@ -75,7 +75,7 @@ export class UsersService {
         return this.users.findOne({id});
     }
     //로그인하지않으면 edit할수 없으니까, token을 사용해서 업뎃하자,
-    async editProfile(userId:number, {email,password}: EditProfileInput) {
-       return this.users.update({id: userId}, {email, password})
+    async editProfile(userId:number, editProfileInput: EditProfileInput) {
+        return this.users.update({id: userId}, {...editProfileInput});
     }
 }
