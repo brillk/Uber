@@ -88,11 +88,26 @@ export class UsersService {
             user.verified = false;
             await this.verification.save(this.verification.create({user}));
         } 
+        /*Verification 엔티티를 생성하고 난 후 user에 위에서 생성한 
+            User 엔티티를 넣을 때 주의할 점은 
+            await this.userRepository.save(createdUser)를 통해 
+            모델을 DB에 완전히 저장한 후 넣어줘야 한다. 
+            그렇지 않으면 user에 User데이터가 제대로 들어가지 않고, 
+            null값이 들어가게 된다. */
 
         if(password) {
             user.password = password;
         }
         return this.users.save(user); 
         // If entities do not exist in the database then inserts, otherwise updates.
+    }
+    async verifyEmail(code:string): Promise<boolean>{
+        //verification을 찾고 삭제해준뒤, verified를 true로 만든다
+        const verification = await this.verification.findOne({code},{relations: ['user']},);
+        if(verification) {
+            verification.user.verified = true;
+            this.users.save(verification.user);
+        }
+        return false;
     }
 }

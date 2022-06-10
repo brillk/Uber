@@ -22,4 +22,5 @@ export class Verification extends CoreEntity{
     createCode(): void {
         this.code = uuidv4();
     }
+   
 }
