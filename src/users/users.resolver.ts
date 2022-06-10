@@ -4,6 +4,7 @@ import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateAccountInput, CreateAccountOutput } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
+import { UserProfileInput, UserProfileOutput } from './dtos/usre-profile.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -57,4 +58,25 @@ export class UsersResolver {
     메서드 범위 또는 전역 범위일 수 있습니다. 
     아래에서 @UseGuards() 데코레이터를 사용하여 컨트롤러 범위 가드를 설정합니다. 
     https://docs.nestjs.com/guards#binding-guards*/
+
+    @UseGuards(AuthGuard)
+    @Query(returns => UserProfileOutput)
+    async userProfile(@Args() userProfileInput: UserProfileInput
+    ): Promise<UserProfileOutput> {
+        try {
+            const user = await this.usersService.findById(userProfileInput.userId);
+            if(!user) {
+                throw Error();
+            }
+            return {
+                ok: true,
+                user,
+            }
+        } catch(e) {
+            return {
+                error: "User Not Found",
+                ok: false,
+            }
+        }
+    }
 }
