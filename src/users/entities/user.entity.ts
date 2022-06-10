@@ -37,6 +37,10 @@ export class User extends CoreEntity{
     @Column({default: false})
     @Field(type => Boolean)
     verified: boolean;
+    /* Verification을 통해 그 안에 User에 접근해서 
+        User의 emailVerified를 false에서 true로 바꿀 것이기 때문에
+        Verification쪽에 @JoinColumn()을 추가하고 
+      user를 통해 생성한 foreign key인 userId을 추가하도록 한 것이다. */
 
     @BeforeInsert()
     @BeforeUpdate()
