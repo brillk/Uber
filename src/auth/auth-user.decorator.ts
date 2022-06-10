@@ -8,4 +8,5 @@ export const AuthUser = createParamDecorator(
         const user = gqlContext['user'];
         return user;
     }
+    
 )

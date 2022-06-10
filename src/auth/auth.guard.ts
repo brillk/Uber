@@ -1,18 +1,18 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Observable } from "rxjs";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    canActivate(context: ExecutionContext) {
-        const gqlContext = GqlExecutionContext.create(context).getContext();
-        const user = gqlContext['user'];
-        if(!user) {
-            return false;
-        } 
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    const gqlContext = GqlExecutionContext.create(context).getContext();
+    const user = gqlContext["user"];
+    if (!user) {
+        return false;
+    }
         return true;
     }
 }
-
 /* Guards
 1. 가드는 CanActivate 인터페이스를 구현하는 @Injectable() 데코레이터로 주석이 달린 클래스입니다.
 

@@ -12,7 +12,8 @@ export class JwtModule {
     static forRoot(options: JwtModuleOptions): DynamicModule {
         return {
             module: JwtModule,
-            providers: [{
+            providers: [
+                {
                 provide: CONFIG_OPTIONS,
                 useValue: options,
             },

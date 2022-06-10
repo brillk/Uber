@@ -16,6 +16,7 @@ export class UsersResolver {
         return true;
     }
 
+
     //첫번째 Mutation
     @Mutation(returns => CreateAccountOutput)
     async createAccount(
@@ -49,7 +50,7 @@ export class UsersResolver {
     @Query(returns => User)
     @UseGuards(AuthGuard)
     me(@AuthUser() authUser: User) {
-        return authUser;
+    return authUser;
     }
     /*@UseGuard() (Binding guards)
     파이프 및 예외 필터와 마찬가지로 가드는 컨트롤러 범위, 
