@@ -75,7 +75,15 @@ export class UsersService {
         return this.users.findOne({id});
     }
     //로그인하지않으면 edit할수 없으니까, token을 사용해서 업뎃하자,
-    async editProfile(userId:number, editProfileInput: EditProfileInput) {
-        return this.users.update({id: userId}, {...editProfileInput});
+    async editProfile(userId:number, {email, password}: EditProfileInput): Promise<User> {
+        const user = await this.users.findOne(userId);
+        if(email) {
+            user.email = email;
+        } 
+
+        if(password) {
+            user.password = password;
+        }
+        return this.users.save(user); // If entities do not exist in the database then inserts, otherwise updates.
     }
 }
