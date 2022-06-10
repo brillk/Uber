@@ -4,16 +4,18 @@ The Backend of Nuber Clone
 
 ## User Entity:
 
-- id
-- createdAt
-- updatedAt
+- Id
+- CreatedAt
+- UpdatedAt
 
-- email
-- password
-- role(client|owner|delivery)
+- Email
+- Password
+- Role(Client|Owner|Delivery)
 
 ## User CRUD:
+
 - Create Account
 - Log In
 - See Profile
 - Edit Profile
+- Verify Email

@@ -4,9 +4,8 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import {CreateAccountInput} from "./dtos/create-account.dto";
 import { LoginInput } from './dtos/login.dto';
-import * as jwt from "jsonwebtoken";
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from 'src/jwt/jwt.service';
+
 @Injectable()
 export class UsersService {
     constructor(
@@ -14,7 +13,10 @@ export class UsersService {
         private readonly jwtService: JwtService,
     ) {}
 
-    async createAccount({email, password, role
+    async createAccount({
+        email, 
+        password, 
+        role
     }: CreateAccountInput) :Promise<{ok: boolean, error ?: string}>{
         try {
             const exists = await this.users.findOne({email});

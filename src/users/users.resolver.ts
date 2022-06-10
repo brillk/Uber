@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateAccountInput, CreateAccountOutput } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
@@ -8,9 +9,7 @@ import { UsersService } from './users.service';
 
 @Resolver(of => User)
 export class UsersResolver {
-    constructor(
-        private readonly usersService: UsersService 
-    ) {}
+    constructor( private readonly usersService: UsersService ) {}
 
     @Query(returns => Boolean)
     hi(){
@@ -46,9 +45,12 @@ export class UsersResolver {
         }
     }
 
+    //@데코레이터 갖다쓰기
     @Query(returns => User)
     @UseGuards(AuthGuard)
-    me() {}
+    me(@AuthUser() authUser: User) {
+        return authUser;
+    }
     /*@UseGuard() (Binding guards)
     파이프 및 예외 필터와 마찬가지로 가드는 컨트롤러 범위, 
     메서드 범위 또는 전역 범위일 수 있습니다. 

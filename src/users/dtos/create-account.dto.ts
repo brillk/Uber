@@ -1,6 +1,6 @@
 // 2개의 DTO 입력과 출력 => create account
 
-import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
+import { InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { MutationOutput } from 'src/common/dtos/output.dto';
 import { User } from '../entities/user.entity';
 

@@ -23,16 +23,16 @@ export class User extends CoreEntity{
     @Column()
     @Field(type => String)
     @IsEmail()
-    email: string
+    email: string;
 
     @Column()
     @Field(type => String)
-    password: string
+    password: string;
 
     @Column({type: "enum", enum: UserRole})
     @Field(type => UserRole)
     @IsEnum(UserRole)
-    role: UserRole
+    role: UserRole;
 
     @BeforeInsert()
     async hashPassword(): Promise<void> {
@@ -47,8 +47,8 @@ export class User extends CoreEntity{
 
     async checkPassword(aPassword: string): Promise<boolean> {
         try{
-         return bcrypt.compare(aPassword, this.password); //적은 패스워드와 DB에 있는 값이 같다면
-        
+         const ok = bcrypt.compare(aPassword, this.password); //적은 패스워드와 DB에 있는 값이 같다면
+        return ok;
         } catch(e){
             console.log(e);
             throw new InternalServerErrorException();
