@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import {CreateAccountInput} from "./dtos/create-account.dto";
 import { LoginInput } from './dtos/login.dto';
 import { JwtService } from 'src/jwt/jwt.service';
+import { EditProfileInput } from './dtos/edit-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -72,5 +73,9 @@ export class UsersService {
     }
     async findById(id: number): Promise<User> {
         return this.users.findOne({id});
+    }
+    //로그인하지않으면 edit할수 없으니까, token을 사용해서 업뎃하자,
+    async editProfile(userId:number, {email,password}: EditProfileInput) {
+       return this.users.update({id: userId}, {email, password})
     }
 }
