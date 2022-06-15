@@ -72,8 +72,8 @@ token(id)을 유저가 볼수도 있다.
     }),
     MailModule.forRoot({
       apiKey:process.env.MAILGUN_API_KEY,
-      fromEmail:process.env.MAILGUN_DOMAIN_NAME,
-      domain:process.env.MAILGUN_FROM_EMAIL,
+      domain:process.env.MAILGUN_DOMAIN_NAME,
+      fromEmail:process.env.MAILGUN_FROM_EMAIL,
     }),
     UsersModule, // staic module 어떠한 설정이 되어 있지 않다
     AuthModule, MailModule,
