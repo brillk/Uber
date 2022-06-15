@@ -14,7 +14,9 @@ export class Verification extends CoreEntity{
     @Field(type => String)
     code: string;
 
-    @OneToOne(type=> User)
+    //User를 삭제할수 없다. -> 혼자 남은 validation을 처리못하기 때문에
+    // 이럴때를 validation이 어떻게 행동해야 하는지 길을 알려준다
+    @OneToOne(type=> User, {onDelete:"CASCADE"})
     @JoinColumn()
     user: User;
 

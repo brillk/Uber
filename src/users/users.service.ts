@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Entity, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import {CreateAccountInput} from "./dtos/create-account.dto";
 import { LoginInput } from './dtos/login.dto';
@@ -49,7 +49,11 @@ export class UsersService {
         // 2. check if the password is correct
         // 3. make a JWT and give it to the user
         try {
-            const user = await this.users.findOne({email});
+            const user = await this.users.findOne(
+                {email}, 
+                {select: ['password']}); 
+            //지금 비밀번호를 무시하고 있어서 에러가 났다.
+            // 정확히 어떤 걸 찾아야 하는지 자세히 적는다
             if(!user) {
                 return {
                     ok: false,
@@ -102,12 +106,20 @@ export class UsersService {
         // If entities do not exist in the database then inserts, otherwise updates.
     }
     async verifyEmail(code:string): Promise<boolean>{
-        //verification을 찾고 삭제해준뒤, verified를 true로 만든다
-        const verification = await this.verification.findOne({code},{relations: ['user']},);
-        if(verification) {
-            verification.user.verified = true;
-            this.users.save(verification.user);
-        }
+      try{
+          //verification을 찾고 삭제해준뒤, verified를 true로 만든다
+          const verification = await this.verification.findOne(
+            {code},
+            {relations: ['user']});
+          if(verification) {
+              verification.user.verified = true;
+              this.users.save(verification.user);
+              return true;
+          }
+          throw new Error();
+      } catch(e) {
+        console.log(e);
         return false;
+      }
     }
 }

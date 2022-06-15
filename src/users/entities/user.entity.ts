@@ -25,7 +25,8 @@ export class User extends CoreEntity{
     @IsEmail()
     email: string;
 
-    @Column()
+    @Column({select: false})
+    //현재 암호화된 비밀번호가 또 암호화되고 저장된다..이것을 방지하자
     @Field(type => String)
     password: string;
 
@@ -45,12 +46,16 @@ export class User extends CoreEntity{
     @BeforeInsert()
     @BeforeUpdate()
     async hashPassword(): Promise<void> {
-        try{
-            this.password = await bcrypt.hash(this.password, 10);
-            
-        }catch(e){
-            console.log(e);
-            throw new InternalServerErrorException();
+        // 만약 users.save()를 전달한 obj에 password 가 존재하면
+        // 비밀번호가 hash되서 저장된다
+        if(this.password){
+            try{
+                this.password = await bcrypt.hash(this.password, 10);
+                
+            }catch(e){
+                console.log(e);
+                throw new InternalServerErrorException();
+            }
         }
     }
     /*
