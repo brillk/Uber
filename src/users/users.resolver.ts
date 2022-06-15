@@ -12,12 +12,10 @@ import { UsersService } from './users.service';
 
 @Resolver(of => User)
 export class UsersResolver {
-    constructor( private readonly usersService: UsersService ) {}
 
+    constructor( private readonly usersService: UsersService ) {}
     @Query(returns => Boolean)
-    hi(){
-        return true;
-    }
+    hi(){ return true;}
 
 
     //첫번째 Mutation
@@ -36,9 +34,8 @@ export class UsersResolver {
     //@데코레이터 갖다쓰기
     @Query(returns => User)
     @UseGuards(AuthGuard)
-    me(@AuthUser() authUser: User) {
-    return authUser;
-    }
+    me( @AuthUser() authUser: User) { return authUser; }
+
     /*@UseGuard() (Binding guards)
     파이프 및 예외 필터와 마찬가지로 가드는 컨트롤러 범위, 
     메서드 범위 또는 전역 범위일 수 있습니다. 
