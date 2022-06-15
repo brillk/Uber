@@ -10,6 +10,7 @@ import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
+import { MailModule } from './mail/mail.module';
 
 // 항상 GraphQL을 만들때는 resolvers와 query를 생성해야 한다
 // env파일을 test, production, development로 나눠서 생성
@@ -41,6 +42,9 @@ token(id)을 유저가 볼수도 있다.
           DB_PASSWORD: Joi.string().required(),
           DB_NAME: Joi.string().required(),
           PRIVATE_KEY: Joi.string().required(),
+          MAILGUN_API_KEY: Joi.string().required(),
+          MAILGUN_DOMAIN_NAME: Joi.string().required(),
+          MAILGUN_FROM_EMAIL: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -66,8 +70,13 @@ token(id)을 유저가 볼수도 있다.
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
     }),
+    MailModule.forRoot({
+      apiKey:process.env.MAILGUN_API_KEY,
+      fromEmail:process.env.MAILGUN_DOMAIN_NAME,
+      domain:process.env.MAILGUN_FROM_EMAIL,
+    }),
     UsersModule, // staic module 어떠한 설정이 되어 있지 않다
-    AuthModule,
+    AuthModule, MailModule,
   ],
   controllers: [],
   providers: [],
