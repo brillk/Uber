@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Entity, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import {CreateAccountInput} from "./dtos/create-account.dto";
-import { LoginInput } from './dtos/login.dto';
+import {CreateAccountInput, CreateAccountOutput} from "./dtos/create-account.dto";
+import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { JwtService } from 'src/jwt/jwt.service';
-import { EditProfileInput } from './dtos/edit-profile.dto';
+import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
+import { UserProfileOutput } from './dtos/usre-profile.dto';
+import { VerifyEmailOutput } from './dtos/verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +23,7 @@ export class UsersService {
         email, 
         password, 
         role
-    }: CreateAccountInput) :Promise<{ok: boolean, error ?: string}>{
+    }: CreateAccountInput) :Promise<CreateAccountOutput>{
         try {
             const exists = await this.users.findOne({email});
             if(exists) {
@@ -41,10 +43,7 @@ export class UsersService {
         // create user & hash the password
         
     }
-    async login({
-        email, 
-        password, 
-    }: LoginInput): Promise<{ok: boolean; error?: string; token?: string}> {
+    async login({email, password }: LoginInput): Promise<LoginOutput> {
         // 1. find the user with the email
         // 2. check if the password is correct
         // 3. make a JWT and give it to the user
@@ -81,31 +80,52 @@ export class UsersService {
             }
         }
     }
-    async findById(id: number): Promise<User> {
-        return this.users.findOne({id});
+    async findById(id: number): Promise<UserProfileOutput> {
+        try {
+            const user = await this.users.findOne({id});
+            if(user) {
+                return {
+                    ok: true,
+                    user: user,
+                };
+            }
+        } catch(error) {
+            return {ok: false, error: 'user not Found'};
+        }
     }
     //로그인하지않으면 edit할수 없으니까, token을 사용해서 업뎃하자,
-    async editProfile(userId:number, {email, password}: EditProfileInput): Promise<User> {
-        const user = await this.users.findOne(userId);
-        if(email) {
-            user.email = email;
-            user.verified = false;
-            await this.verification.save(this.verification.create({user}));
-        } 
-        /*Verification 엔티티를 생성하고 난 후 user에 위에서 생성한 
-            User 엔티티를 넣을 때 주의할 점은 
-            await this.userRepository.save(createdUser)를 통해 
-            모델을 DB에 완전히 저장한 후 넣어줘야 한다. 
-            그렇지 않으면 user에 User데이터가 제대로 들어가지 않고, 
-            null값이 들어가게 된다. */
-
-        if(password) {
-            user.password = password;
-        }
-        return this.users.save(user); 
+    async editProfile(userId:number, {email, password}: EditProfileInput
+        ): Promise<EditProfileOutput> {
+            try{
+                const user = await this.users.findOne(userId);
+                if(email) {
+                    user.email = email;
+                    user.verified = false;
+                    await this.verification.save(this.verification.create({user}));
+                } 
+                /*Verification 엔티티를 생성하고 난 후 user에 위에서 생성한 
+                    User 엔티티를 넣을 때 주의할 점은 
+                    await this.userRepository.save(createdUser)를 통해 
+                    모델을 DB에 완전히 저장한 후 넣어줘야 한다. 
+                    그렇지 않으면 user에 User데이터가 제대로 들어가지 않고, 
+                    null값이 들어가게 된다. */
+        
+                if(password) {
+                    user.password = password;
+                }
+                await this.users.save(user); 
+                return {
+                    ok:true,
+                };
+            } catch(error) {
+                return {
+                    ok:false,
+                    error: 'Could not update Profile',
+                };
+            }
         // If entities do not exist in the database then inserts, otherwise updates.
     }
-    async verifyEmail(code:string): Promise<boolean>{
+    async verifyEmail(code:string): Promise<VerifyEmailOutput>{
       try{
           //verification을 찾고 삭제해준뒤, verified를 true로 만든다
           const verification = await this.verification.findOne(
@@ -114,12 +134,11 @@ export class UsersService {
           if(verification) {
               verification.user.verified = true;
               this.users.save(verification.user);
-              return true;
+              return {ok:true};
           }
-          throw new Error();
-      } catch(e) {
-        console.log(e);
-        return false;
+          return {ok: false, error: 'Verification not found'};
+      } catch(error) {
+        return {ok:false, error};
       }
     }
 }
