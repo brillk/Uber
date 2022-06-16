@@ -103,7 +103,9 @@ export class UsersService {
                 if(email) {
                     user.email = email;
                     user.verified = false;
-                    const verification = await this.verification.save(this.verification.create({user}));
+                    const verification = await this.verification.save(
+                        this.verification.create({user})
+                        );
                     this.mailService.sendVerificationEmail(user.email, verification.code);
                 } 
                 /*Verification 엔티티를 생성하고 난 후 user에 위에서 생성한 

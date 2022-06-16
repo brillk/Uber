@@ -216,7 +216,48 @@ describe("UsersService", () => {
             expect(result).toEqual({ok: false, error: 'User not Found'});
         });
     });
-    
-    it.todo('editProfile');
+
+    describe('editProfile', () => {
+
+        it("should change email", async() => {
+            const oldUser = {
+                email: 'mn@fw.com',
+                verified: true,
+            };
+            const editProfileArgs = {
+                userId: 1,
+                input: {email: "bs@new.com"},
+            };
+
+            const newVerification = {
+                code: 'code',
+            }
+
+            const newUser = {
+                verified: false,
+                email: editProfileArgs.input.email,
+            }
+
+            usersRepository.findOne.mockResolvedValue(oldUser);
+            verificationsRepository.create.mockReturnValue(newVerification);
+            verificationsRepository.save.mockReturnValue(newVerification);
+
+            await service.editProfile(editProfileArgs.userId, editProfileArgs.input);
+            expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(usersRepository.findOne).toHaveBeenCalledWith(
+                editProfileArgs.userId
+                );
+            // 새로 만든 이메일
+            expect(verificationsRepository.create).toHaveBeenCalledWith({user: newUser});
+            expect(verificationsRepository.save).toHaveBeenCalledWith(newVerification);
+                
+            //sendVerificationEmail이 new email과 code로 함께 call됨을 expect해야함
+            expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
+                newUser.email, 
+                newVerification.code);
+        })
+    });
+
+
     it.todo('verifyEmail');
 });
