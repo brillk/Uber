@@ -73,13 +73,13 @@ describe("UsersService", () => {
     });
 
     //unit 테스트하기
-   describe('createAccount', () => {
+    describe('createAccount', () => {
 
     const createAccountArgs = {
         email: '',
         password: '',
         role: 0,
-      };
+    };
 
     it('should fail if user exists', async () => {
         usersRepository.findOne.mockResolvedValue({
@@ -91,8 +91,9 @@ describe("UsersService", () => {
           ok: false,
           error: 'The User is already Exist',
         });
-      });
-      it('should create a new user', async () => {
+        });
+    
+    it('should create a new user', async () => {
         //함수 자체를 테스트하는 방법도 있다
 
         // return
@@ -131,8 +132,41 @@ describe("UsersService", () => {
         );
         expect(result).toEqual({ok: true});
         });
+
+        // if it's failed this will happen
+    it('should fail on exception', async() => {
+        usersRepository.findOne.mockRejectedValue(new Error());
+            const result= await service.createAccount(createAccountArgs)
+        expect(result).toEqual({ok: false, error: "Could'nt create account"});
+        });
+    
     });
-    it.todo('login');
+    describe('login', () => {
+
+        const loginArgument = {
+            email: 'qzx@fw.com',
+            password: 'asdfg',
+        }
+        /*
+        mockFn.mockRejectedValue(value)
+        항상 거부하는 비동기 mock 함수를 만드는 데 유용합니다.
+        */
+        it("should be fail if user doesn't exist", async() => {
+            usersRepository.findOne.mockResolvedValue(null);
+
+            const result = await service.login(loginArgument);
+            
+            expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
+            expect(usersRepository.findOne).toHaveBeenCalledWith(
+                expect.any(Object),
+                expect.any(Object));
+        
+            expect(result).toEqual({
+                ok: false,
+                error: "User not found",
+            });
+        })
+    });
     it.todo('findById');
     it.todo('editProfile');
     it.todo('verifyEmail');
