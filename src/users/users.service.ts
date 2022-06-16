@@ -131,21 +131,22 @@ export class UsersService {
         // If entities do not exist in the database then inserts, otherwise updates.
     }
     async verifyEmail(code:string): Promise<VerifyEmailOutput>{
-      try{
+        try{
           //verification을 찾고 삭제해준뒤, verified를 true로 만든다
-          const verification = await this.verification.findOne(
+            const verification = await this.verification.findOne(
             {code},
             {relations: ['user']});
-          if(verification) {
-              verification.user.verified = true;
-              await this.users.save(verification.user);
+
+            if(verification) {
+                verification.user.verified = true;
+                await this.users.save(verification.user);
               // verification 삭제하기
-              await this.verification.delete(verification.id);
-              return {ok:true};
-          }
-          return {ok: false, error: 'Verification not found'};
-      } catch(error) {
-        return {ok:false, error};
-      }
+                await this.verification.delete(verification.id);
+                return {ok:true};
+            }
+            return {ok: false, error: 'Verification not found'};
+        } catch(error) {
+            return {ok:false, error};
+        }
     }
 }
