@@ -12,6 +12,7 @@ const mockRepository = () => ({
     findOne: jest.fn(),
     save: jest.fn(),
     create: jest.fn(),
+    findOneOrFail: jest.fn(),
 });
 
 const mockJwtService = {
@@ -77,72 +78,74 @@ describe("UsersService", () => {
     //unit 테스트하기
     describe('createAccount', () => {
 
-    const createAccountArgs = {
-        email: '',
-        password: '',
-        role: 0,
-    };
+        const createAccountArgs = {
+            email: '',
+            password: '',
+            role: 0,
+        };
 
-    it('should fail if user exists', async () => {
-        usersRepository.findOne.mockResolvedValue({
-          id: 6,
-          email: 'awfefwefwef',
-        });
-        const result = await service.createAccount(createAccountArgs);
-        expect(result).toMatchObject({
-          ok: false,
-          error: 'The User is already Exist',
-        });
-        });
-    
-    it('should create a new user', async () => {
-        //함수 자체를 테스트하는 방법도 있다
-
-        // return
-        usersRepository.findOne.mockResolvedValue(undefined);
-        usersRepository.create.mockReturnValue(createAccountArgs); 
-        usersRepository.save.mockResolvedValue(createAccountArgs);
-        verificationsRepository.create.mockReturnValue(
-            {user: createAccountArgs
-        });
-
-        verificationsRepository.save.mockResolvedValue(
-            {code: 'code'
-        });
+        it('should fail if user exists', async () => {
+            usersRepository.findOne.mockResolvedValue({
+            id: 6,
+            email: 'awfefwefwef',
+            });
+            const result = await service.createAccount(createAccountArgs);
+            expect(result).toMatchObject({
+            ok: false,
+            error: 'The User is already Exist',
+            });
+            });
         
+        it('should create a new user', async () => {
+            //함수 자체를 테스트하는 방법도 있다
 
-        const result = await service.createAccount(createAccountArgs);
-        expect(usersRepository.create).toHaveBeenCalledTimes(1);
-        expect(usersRepository.create).toHaveBeenCalledWith(createAccountArgs);
+            // return
+            usersRepository.findOne.mockResolvedValue(undefined);
+            usersRepository.create.mockReturnValue(createAccountArgs); 
+            usersRepository.save.mockResolvedValue(createAccountArgs);
+            verificationsRepository.create.mockReturnValue(
+                {user: createAccountArgs
+            });
 
-        expect(usersRepository.save).toHaveBeenCalledTimes(1);
-        expect(usersRepository.save).toHaveBeenCalledWith(createAccountArgs);  
-    
-        expect(verificationsRepository.create).toHaveBeenCalledTimes(1);
-        expect(verificationsRepository.create).toHaveBeenCalledWith({
-            user: createAccountArgs,
-        });
+            verificationsRepository.save.mockResolvedValue(
+                {code: 'code'
+            });
+            
 
-        expect(verificationsRepository.save).toHaveBeenCalledTimes(1);
-        expect(verificationsRepository.save).toHaveBeenCalledWith(
-          { user: createAccountArgs});  
+            const result = await service.createAccount(createAccountArgs);
+            expect(usersRepository.create).toHaveBeenCalledTimes(1);
+            expect(usersRepository.create).toHaveBeenCalledWith(createAccountArgs);
 
-        expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
-        expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
-            expect.any(String), 
-            expect.any(String),
-        );
-        expect(result).toEqual({ok: true});
-        });
+            expect(usersRepository.save).toHaveBeenCalledTimes(1);
+            expect(usersRepository.save).toHaveBeenCalledWith(createAccountArgs);  
+        
+            expect(verificationsRepository.create).toHaveBeenCalledTimes(1);
+            expect(verificationsRepository.create).toHaveBeenCalledWith({
+                user: createAccountArgs,
+            });
 
-        // if it's failed this will happen
-    it('should fail on exception', async() => {
-        usersRepository.findOne.mockRejectedValue(new Error());
-            const result= await service.createAccount(createAccountArgs)
-        expect(result).toEqual({ok: false, error: "Couldn't create account"});
-        });
+            expect(verificationsRepository.save).toHaveBeenCalledTimes(1);
+            expect(verificationsRepository.save).toHaveBeenCalledWith(
+            { user: createAccountArgs});  
+
+            expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
+            expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
+                expect.any(String), 
+                expect.any(String),
+            );
+            expect(result).toEqual({ok: true});
+            });
+
+            // if it's failed this will happen
+        it('should fail on exception', async() => {
+            usersRepository.findOne.mockRejectedValue(new Error());
+                const result= await service.createAccount(createAccountArgs)
+            expect(result).toEqual({ok: false, error: "Couldn't create account"});
+            });
     
     });
+
+
     describe('login', () => {
 
         const loginArgument = {
@@ -195,7 +198,25 @@ describe("UsersService", () => {
     //call한 숫자는 앞의 함수를 실행하느라 쌓여서 나온거다 
     //해결법: beforeEach
     //end-to-end testing은 before all을 쓴다
-    it.todo('findById');
+    describe('findById', () => {
+
+        const findByIdArgs = {
+            id: 1,
+        }
+
+        it('should find an existing user', async() => {
+            usersRepository.findOneOrFail.mockResolvedValue(findByIdArgs);
+            const result = await service.findById(1);
+            expect(result).toEqual({ok: true, user: findByIdArgs});
+        });
+
+        it('should fail if no user is found', async() => {
+            usersRepository.findOneOrFail.mockRejectedValue(new Error());
+            const result = await service.findById(1);
+            expect(result).toEqual({ok: false, error: 'User not Found'});
+        });
+    });
+    
     it.todo('editProfile');
     it.todo('verifyEmail');
 });

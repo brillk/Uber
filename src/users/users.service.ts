@@ -86,15 +86,13 @@ export class UsersService {
     }
     async findById(id: number): Promise<UserProfileOutput> {
         try {
-            const user = await this.users.findOne({id});
-            if(user) {
-                return {
-                    ok: true,
-                    user: user,
-                };
-            }
+            const user = await this.users.findOneOrFail({id});
+            return {
+                ok: true,
+                user,
+            };
         } catch(error) {
-            return {ok: false, error: 'user not Found'};
+            return {ok: false, error: 'User not Found'};
         }
     }
     //로그인하지않으면 edit할수 없으니까, token을 사용해서 업뎃하자,
