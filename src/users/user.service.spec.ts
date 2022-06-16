@@ -8,11 +8,11 @@ import { Verification } from './entities/verification.entity';
 import { UsersService } from './users.service';
 
 // 지금 가짜로 respo를 만들어서 실험중이다
-const mockRepository = {
+const mockRepository = () => ({
     findOne: jest.fn(),
     save: jest.fn(),
     create: jest.fn(),
-}
+});
 
 const mockJwtService = {
     sign: jest.fn(),
@@ -36,17 +36,20 @@ describe("UsersService", () => {
 
     let service: UsersService;
     let usersRepository: MockRepository<User>;
+    let verificationsRepository: MockRepository<Verification>;
+
+
     //테스트 모듈을 만들고 컴파일하기
     beforeAll(async () => {
         const module = await Test.createTestingModule({
             providers: [UsersService, 
                 {
                 provide: getRepositoryToken(User), 
-                useValue: mockRepository,
+                useValue: mockRepository(),
                 },
                 {
                 provide: getRepositoryToken(Verification), 
-                useValue: mockRepository,
+                useValue: mockRepository(),
                 },
                 {
                 provide: JwtService, 
@@ -69,21 +72,35 @@ describe("UsersService", () => {
 
     //unit 테스트하기
    describe('createAccount', () => {
+
+    const createAccountArgs = {
+        email: '',
+        password: '',
+        role: 0,
+      };
+
     it('should fail if user exists', async () => {
         usersRepository.findOne.mockResolvedValue({
           id: 6,
           email: 'awfefwefwef',
         });
-        const result = await service.createAccount({
-          email: '',
-          password: '',
-          role: 0,
-        });
+        const result = await service.createAccount(createAccountArgs);
         expect(result).toMatchObject({
           ok: false,
           error: 'There is a user with that email already',
         });
       });
+      it('should create a new user', async () => {
+        //함수 자체를 테스트하는 방법도 있다
+        usersRepository.findOne.mockResolvedValue(undefined);
+        usersRepository.create.mockReturnValue(createAccountArgs); // return 
+
+        await service.createAccount(createAccountArgs);
+        expect(usersRepository.create).toHaveBeenCalledTimes(1);
+        expect(usersRepository.create).toHaveBeenCalledWith(createAccountArgs);
+        expect(usersRepository.save).toHaveBeenCalledTimes(1);
+        expect(usersRepository.save).toHaveBeenCalledWith(createAccountArgs);  
+    })
 });
     it.todo('login');
     it.todo('findById');

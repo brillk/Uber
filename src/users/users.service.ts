@@ -28,7 +28,6 @@ export class UsersService {
     }: CreateAccountInput) :Promise<CreateAccountOutput>{
         try {
             const exists = await this.users.findOne({email});
-            console.log(exists);
             if(exists) {
                 //존재하는 계정이기에 에러를 뱉는다
                 return {ok: false, error: "The User is already Exist"};
