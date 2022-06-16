@@ -42,15 +42,15 @@ export class UsersResolver {
     아래에서 @UseGuards() 데코레이터를 사용하여 컨트롤러 범위 가드를 설정합니다. 
     https://docs.nestjs.com/guards#binding-guards*/
 
-    @UseGuards(AuthGuard)
     @Query(returns => UserProfileOutput)
+    @UseGuards(AuthGuard)
     async userProfile(@Args() userProfileInput: UserProfileInput
     ): Promise<UserProfileOutput> {
        return this.usersService.findById(userProfileInput.userId);
     }
 
-    @UseGuards(AuthGuard)
     @Mutation(returns => EditProfileOutput) 
+    @UseGuards(AuthGuard)
     async editProfile(@AuthUser() authUser: User, @Args('input') editProfileInput: EditProfileInput
     ) : Promise<EditProfileOutput> {
       return this.usersService.editProfile(authUser.id, editProfileInput);

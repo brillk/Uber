@@ -9,6 +9,7 @@ import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { UserProfileOutput } from './dtos/usre-profile.dto';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +18,7 @@ export class UsersService {
         @InjectRepository(Verification) 
         private readonly verification: Repository<Verification>,
         private readonly jwtService: JwtService,
+        private readonly mailService: MailService,
     ) {}
 
     async createAccount({
@@ -32,9 +34,11 @@ export class UsersService {
             }
             //계정이 없다면 만든다
             const user = await this.users.save(this.users.create({email, password, role}));
-            await this.verification.save(this.verification.create({
+            const verification = await this.verification.save(this.verification.create({
                 user,
-            }))
+            })
+            )
+            this.mailService.sendVerificationEmail(user.email, verification.code);
             return {ok: true};
         } catch(e) {
             return {ok: false, error: "Couldn't create account"}
@@ -50,7 +54,7 @@ export class UsersService {
         try {
             const user = await this.users.findOne(
                 {email}, 
-                {select: ['password']}); 
+                {select: ['id','password']}); 
             //지금 비밀번호를 무시하고 있어서 에러가 났다.
             // 정확히 어떤 걸 찾아야 하는지 자세히 적는다
             if(!user) {
@@ -101,7 +105,8 @@ export class UsersService {
                 if(email) {
                     user.email = email;
                     user.verified = false;
-                    await this.verification.save(this.verification.create({user}));
+                    const verification = await this.verification.save(this.verification.create({user}));
+                    this.mailService.sendVerificationEmail(user.email, verification.code);
                 } 
                 /*Verification 엔티티를 생성하고 난 후 user에 위에서 생성한 
                     User 엔티티를 넣을 때 주의할 점은 

@@ -18,7 +18,9 @@ export class JwtMiddleware implements NestMiddleware {
             const user = await this.userService.findById(decoded['id']);
             req['user'] = user; // 애를 공유해보자 http req 같은건데 이걸 graphql resolver에 전달
           } 
-        } catch (e) {}
+        } catch (e) {
+          console.log(e);
+        }
       }
       next();
     }
