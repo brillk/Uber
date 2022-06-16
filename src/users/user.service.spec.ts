@@ -69,10 +69,22 @@ describe("UsersService", () => {
 
     //unit 테스트하기
    describe('createAccount', () => {
-    it("should fail if user exists", () => {
-
-    })
-   });
+    it('should fail if user exists', async () => {
+        usersRepository.findOne.mockResolvedValue({
+          id: 6,
+          email: 'awfefwefwef',
+        });
+        const result = await service.createAccount({
+          email: '',
+          password: '',
+          role: 0,
+        });
+        expect(result).toMatchObject({
+          ok: false,
+          error: 'There is a user with that email already',
+        });
+      });
+});
     it.todo('login');
     it.todo('findById');
     it.todo('editProfile');
