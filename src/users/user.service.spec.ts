@@ -223,7 +223,7 @@ describe("UsersService", () => {
         it('should fail if no user is found', async() => {
             usersRepository.findOneOrFail.mockRejectedValue(new Error());
             const result = await service.findById(1);
-            expect(result).toEqual({ok: false, error: 'User not Found'});
+            expect(result).toEqual({ok: false, error: 'User Not Found'});
         });
     });
 
