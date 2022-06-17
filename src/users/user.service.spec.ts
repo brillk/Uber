@@ -16,14 +16,14 @@ const mockRepository = () => ({
     delete: jest.fn(),
 });
 
-const mockJwtService = {
+const mockJwtService = () => ({
     sign: jest.fn(() => 'signed-token-baby'),
     verify: jest.fn(),
-}
+})
 
-const mockMailService = {
+const mockMailService = () => ({ 
     sendVerificationEmail: jest.fn(),
-}
+});
 /*
 Record
 속성 키가 Key이고 속성 값이 Type인 객체 유형을 구성합니다.
@@ -32,7 +32,7 @@ Record
 Keyof Type Operator
 keyof 연산자는 객체 type을 사용하여 해당 키의 문자열 또는 숫자 리터럴 통합을 생성합니다.
 */
-type MockRepository<T = any> = Partial<Record<keyof Repository<User>, jest.Mock>>;
+type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe("UsersService", () => {
 
@@ -45,24 +45,25 @@ describe("UsersService", () => {
     //테스트 모듈을 만들고 컴파일하기
     beforeEach(async () => {
         const module = await Test.createTestingModule({
-            providers: [UsersService, 
+            providers: [
+                UsersService, 
                 {
-                provide: getRepositoryToken(User), 
-                useValue: mockRepository(),
+                    provide: getRepositoryToken(User), 
+                    useValue: mockRepository(),
                 },
                 {
-                provide: getRepositoryToken(Verification), 
-                useValue: mockRepository(),
+                    provide: getRepositoryToken(Verification), 
+                    useValue: mockRepository(),
                 },
                 {
-                provide: JwtService, 
-                useValue: mockJwtService,
+                    provide: JwtService, 
+                    useValue: mockJwtService(),
                 },
                 {
-                provide: MailService, 
-                useValue: mockMailService,
+                    provide: MailService, 
+                    useValue: mockMailService(),
                 }
-        ],
+            ],
             //mocking을 사용해서 테스트하기
         }).compile();
         service = module.get<UsersService>(UsersService);
@@ -80,21 +81,21 @@ describe("UsersService", () => {
     describe('createAccount', () => {
 
         const createAccountArgs = {
-            email: '',
-            password: '',
+            email: 'bs@email.com',
+            password: 'bs.password',
             role: 0,
         };
 
         it('should fail if user exists', async () => {
             usersRepository.findOne.mockResolvedValue({
-            id: 6,
-            email: 'awfefwefwef',
+            id: 1,
+            email: '',
             });
             const result = await service.createAccount(createAccountArgs);
             expect(result).toMatchObject({
-            ok: false,
-            error: 'The User is already Exist',
-            });
+                ok: false,
+                error: 'The User is already Exist',
+                });
             });
         
         it('should create a new user', async () => {
@@ -104,16 +105,18 @@ describe("UsersService", () => {
             usersRepository.findOne.mockResolvedValue(undefined);
             usersRepository.create.mockReturnValue(createAccountArgs); 
             usersRepository.save.mockResolvedValue(createAccountArgs);
+
             verificationsRepository.create.mockReturnValue(
                 {user: createAccountArgs
             });
 
-            verificationsRepository.save.mockResolvedValue(
-                {code: 'code'
+            verificationsRepository.save.mockResolvedValue({
+                code: 'code'
             });
             
 
             const result = await service.createAccount(createAccountArgs);
+            
             expect(usersRepository.create).toHaveBeenCalledTimes(1);
             expect(usersRepository.create).toHaveBeenCalledWith(createAccountArgs);
 
@@ -126,8 +129,9 @@ describe("UsersService", () => {
             });
 
             expect(verificationsRepository.save).toHaveBeenCalledTimes(1);
-            expect(verificationsRepository.save).toHaveBeenCalledWith(
-            { user: createAccountArgs});  
+            expect(verificationsRepository.save).toHaveBeenCalledWith({
+                user: createAccountArgs,
+            });  
 
             expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
             expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
@@ -135,23 +139,22 @@ describe("UsersService", () => {
                 expect.any(String),
             );
             expect(result).toEqual({ok: true});
-            });
+        });
 
             // if it's failed this will happen
         it('should fail on exception', async() => {
             usersRepository.findOne.mockRejectedValue(new Error());
                 const result= await service.createAccount(createAccountArgs)
             expect(result).toEqual({ok: false, error: "Couldn't create account"});
-            });
-    
+        });
     });
 
 
     describe('login', () => {
 
         const loginArgument = {
-            email: 'qzx@fw.com',
-            password: 'asdfg',
+            email: 'bs@email.com',
+            password: 'bs.password',
         }
         /*
         mockFn.mockRejectedValue(value)
@@ -173,7 +176,7 @@ describe("UsersService", () => {
             });
         })
 
-        it('should fail if pasword is wrong',async () => {
+        it('should fail if password is wrong',async () => {
             const mockedUser = {
                 checkPassword: jest.fn(() => Promise.resolve(false))
                 //promise를 리턴하는 mock func이다
@@ -192,8 +195,14 @@ describe("UsersService", () => {
             const result = await service.login(loginArgument);
             expect(jwtService.sign).toHaveBeenCalledTimes(1);
             expect(jwtService.sign).toHaveBeenCalledWith(expect.any(Number));
-            expect(result).toEqual({ok: true, token: 'signed-token-baby'});
+            expect(result).toEqual({ ok: true, token: 'signed-token-baby' });
         });
+
+        it('should fail on exception',async () => {
+            usersRepository.findOne.mockRejectedValue(new Error());
+            const result = await service.login(loginArgument);
+            expect(result).toEqual({ok: false, error: "Can't log user in."})
+        })
     });
 
     //call한 숫자는 앞의 함수를 실행하느라 쌓여서 나온거다 
@@ -222,7 +231,7 @@ describe("UsersService", () => {
 
         it("should change email", async() => {
             const oldUser = {
-                email: 'mn@fw.com',
+                email: 'bs@old.com',
                 verified: true,
             };
             const editProfileArgs = {
@@ -241,18 +250,24 @@ describe("UsersService", () => {
 
             usersRepository.findOne.mockResolvedValue(oldUser);
             verificationsRepository.create.mockReturnValue(newVerification);
-            verificationsRepository.save.mockReturnValue(newVerification);
+            verificationsRepository.save.mockResolvedValue(newVerification);
 
             await service.editProfile(editProfileArgs.userId, editProfileArgs.input);
+
             expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
             expect(usersRepository.findOne).toHaveBeenCalledWith(
                 editProfileArgs.userId
                 );
             // 새로 만든 이메일
-            expect(verificationsRepository.create).toHaveBeenCalledWith({user: newUser});
-            expect(verificationsRepository.save).toHaveBeenCalledWith(newVerification);
+            expect(verificationsRepository.create).toHaveBeenCalledWith({
+                user: newUser
+            });
+            expect(verificationsRepository.save).toHaveBeenCalledWith(
+                newVerification
+            );
                 
             //sendVerificationEmail이 new email과 code로 함께 call됨을 expect해야함
+            expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
             expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
                 newUser.email, 
                 newVerification.code);

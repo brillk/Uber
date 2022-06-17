@@ -31,16 +31,20 @@ export class UsersService {
             if(exists) {
                 //존재하는 계정이기에 에러를 뱉는다
                 return {ok: false, error: "The User is already Exist"};
-            }
+            };
             //계정이 없다면 만든다
-            const user = await this.users.save(this.users.create({email, password, role}));
-            const verification = await this.verification.save(this.verification.create({
-                user,
-            })
-            )
+            const user = await this.users.save(
+                this.users.create({email, password, role})
+            );
+
+            const verification = await this.verification.save(
+                this.verification.create({
+                    user,
+                }),
+            );
             this.mailService.sendVerificationEmail(user.email, verification.code);
             return {ok: true};
-        } catch(e) {
+        } catch(error) {
             return {ok: false, error: "Couldn't create account"}
         }
         //check new user
@@ -54,7 +58,9 @@ export class UsersService {
         try {
             const user = await this.users.findOne(
                 {email}, 
-                {select: ['id','password']}); 
+                {select: ['id','password']}
+            );
+
             //지금 비밀번호를 무시하고 있어서 에러가 났다.
             // 정확히 어떤 걸 찾아야 하는지 자세히 적는다
             if(!user) {
@@ -80,7 +86,7 @@ export class UsersService {
         } catch(error) {
             return {
                 ok: false,
-                error,
+                error: "Can't log user in.",
             }
         }
     }
@@ -96,7 +102,9 @@ export class UsersService {
         }
     }
     //로그인하지않으면 edit할수 없으니까, token을 사용해서 업뎃하자,
-    async editProfile(userId:number, {email, password}: EditProfileInput
+    async editProfile(
+        userId:number, 
+        {email, password}: EditProfileInput
         ): Promise<EditProfileOutput> {
             try{
                 const user = await this.users.findOne(userId);
@@ -123,10 +131,7 @@ export class UsersService {
                     ok:true,
                 };
             } catch(error) {
-                return {
-                    ok:false,
-                    error: 'Could not update Profile',
-                };
+                return { ok:false, error: 'Could not update Profile' };
             }
         // If entities do not exist in the database then inserts, otherwise updates.
     }
