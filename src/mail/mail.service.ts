@@ -14,11 +14,11 @@ export class MailService {
     ) {} 
 
     //email을 보내는 함수
-    private async sendEmail(
+    async sendEmail(
         subject:string, 
         template:string, 
         emailVar: EmailVar[],
-        ) {
+        ): Promise<boolean> {
 
         const form = new FormData();
         form.append("from", `Kim from Nuber-Eats <mailgun@${this.options.domain}>`);
@@ -28,7 +28,8 @@ export class MailService {
         emailVar.forEach(eVar => form.append(`v:${eVar.key}`, eVar.value));
 
         try {
-            await got(`https://api.mailgun.net/v3/${this.options.domain}/messages`, {
+            //post로 적으면 jest post의 implementation을 mock 할수 있다.
+            await got.post(`https://api.mailgun.net/v3/${this.options.domain}/messages`, {
             method: "POST",
             headers: {
                 Authorization: `Basic ${Buffer.from(
@@ -37,8 +38,9 @@ export class MailService {
             },
             body:form,
         });
+        return true;
         } catch (error) {
-            console.log(error);
+            return false;
         }
     }
 
