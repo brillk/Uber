@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { getConnection } from 'typeorm';
+
+
+const GRAPHQL_ENDPOINT = '/graphql';
 
 describe('UserModule (e2e)', () => {
   let app: INestApplication;
@@ -19,9 +23,42 @@ describe('UserModule (e2e)', () => {
   // 뜨는 경고 해결
   // 테스트가 끝나면 데이터베이스를 드랍할거다
   afterAll(async() => {
-    await getConnection().dropDatabase()
+    await getConnection().dropDatabase();
     app.close();
   }) 
+
+  describe('createAccount', () => {
+
+
+
+    it('should create account', () => {
+
+      const EMAIL = "kim@kim.com";
+
+      //GRAPHQL_ENDPOINT로 post request를 보낸다
+      return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        //graphql playground의 형식을 따른다
+        query: `
+        mutation {
+          createAccount(input: {
+            email: "${EMAIL}",
+            password: "kim",
+            role: Owner,
+          }) {
+            ok
+            error 
+          }
+        }`,
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.data.createAccount.ok).toBe(true);
+        expect(res.body.data.createAccount.error).toBe(null);
+      })
+    })
+  })
 
   it.todo("createAccount");
   it.todo("userProfile");
