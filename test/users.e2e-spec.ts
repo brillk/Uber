@@ -7,6 +7,16 @@ import { getConnection } from 'typeorm';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
+//request를 보내니까 메일이 잔뜩 쌓인다
+// 이걸 mock으로 해결해보자
+
+jest.mock("got", () => {
+  return {
+    post: jest.fn(),
+  }
+})
+
+
 describe('UserModule (e2e)', () => {
   let app: INestApplication;
 
@@ -56,6 +66,30 @@ describe('UserModule (e2e)', () => {
       .expect(res => {
         expect(res.body.data.createAccount.ok).toBe(true);
         expect(res.body.data.createAccount.error).toBe(null);
+      })
+    })
+
+    it("shoyld faile if account already exist", () => {
+      const EMAIL = "kim@kim.com";
+      return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: `
+        mutation {
+          createAccount(input: {
+            email: "${EMAIL}",
+            password: "kim",
+            role: Owner,
+          }) {
+            ok
+            error 
+          }
+        }`,
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.data.createAccount.ok).toBe(false);
+        expect(res.body.data.createAccount.error).toEqual(expect.any(String));
       })
     })
   })
