@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 import { getConnection, getRepository, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Verification } from 'src/users/entities/verification.entity';
 
 
 const GRAPHQL_ENDPOINT = '/graphql';
@@ -27,6 +28,7 @@ jest.mock("got", () => {
 describe('UserModule (e2e)', () => {
   let app: INestApplication;
   let usersRepository: Repository<User>; //get user's respo
+  let verificationRepository: Repository<Verification>;
   let jwtToken: string;
 
   beforeAll(async () => {
@@ -36,6 +38,7 @@ describe('UserModule (e2e)', () => {
 
     app = module.createNestApplication();
     usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    verificationRepository = module.get<Repository<Verification>>(getRepositoryToken(Verification));
     await app.init();
   });
 
@@ -261,6 +264,104 @@ describe('UserModule (e2e)', () => {
       })
     })
   });
-  it.todo("verifyEmail");
-  it.todo("editProfile");
+
+  describe('editProfile', () => {
+    const NEW_EMAIL = 'kim@kim.com';
+    it('should change email', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', jwtToken)
+        .send({
+          query: `
+            mutation {
+              editProfile(input:{
+                email: "${NEW_EMAIL}"
+              }) {
+                ok
+                error
+              }
+            }
+        `,
+        })
+        .expect(200)
+        .expect(res => {const{ body: {data: {editProfile: { ok, error }}}} = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+
+    it('should have new email', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', jwtToken)
+        .send({
+          query: `
+          {
+            me {
+              email
+            }
+          }
+        `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {body: {data: {me: { email }}}} = res;
+          expect(email).toBe(NEW_EMAIL);
+        });
+    });
+  });
+
+  describe("verifyEmail", () => {
+    // 굳이 이렇게 안해됨 단지 테스트 용도임
+
+    let verificationCode: string;
+    beforeAll(async() =>{
+      const [verification] = await verificationRepository.find();
+      verificationCode = verification.code;
+    }); // use user's ID or get data from db
+    it("should verify email", () => {
+      request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: `
+          mutation {
+            verifyEmail(input:{
+              code: "${verificationCode}"
+            }) {
+              ok
+              error
+            }
+          }
+        `
+      })
+      .expect(200)
+      .expect(res => {
+        const {body: {data: {verifyEmail: {ok, error}}}} = res;
+        expect(ok).toBe(true);
+        expect(error).toBe(null);
+      })
+    })
+    it('should fail on verification code not found', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+            mutation {
+              verifyEmail(input:{
+                code: "zzzzz"
+              }) {
+                ok
+                error
+              }
+            }
+          `
+        })
+        .expect(200)
+        .expect(res => {
+          const {body: {data: {verifyEmail: {ok, error}}}} = res;
+          expect(ok).toBe(false);
+          expect(error).toBe("Verification not found");
+        })
+    })
+  });
 });

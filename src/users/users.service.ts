@@ -111,6 +111,10 @@ export class UsersService {
                 if(email) {
                     user.email = email;
                     user.verified = false;
+                    // user will got only on verification
+                    // but since we create the user, the user already have 1 veri
+                    // so delete old user for avoid verification conflict.
+                    await this.verification.delete({user: {id: user.id}});
                     const verification = await this.verification.save(
                         this.verification.create({user})
                         );
@@ -131,6 +135,7 @@ export class UsersService {
                     ok:true,
                 };
             } catch(error) {
+                
                 return { ok:false, error: 'Could not update Profile' };
             }
         // If entities do not exist in the database then inserts, otherwise updates.

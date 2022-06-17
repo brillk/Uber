@@ -20,7 +20,7 @@ registerEnumType(UserRole, {name: "UserRole"});
 @Entity()
 export class User extends CoreEntity{
     // 뭐랄까 html의 마크업인가?  @Column = save될때, DB에 지속적으로 있는다.
-    @Column()
+    @Column({unique: true})
     @Field(type => String)
     @IsEmail()
     email: string;
