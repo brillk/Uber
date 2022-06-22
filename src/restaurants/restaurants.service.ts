@@ -1,34 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
-import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
+import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
+import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 
 @Injectable()
 export class RestaurantService {
     constructor(
     @InjectRepository(Restaurant)
-    private readonly restaurants: Repository<Restaurant>,) {}
+    private readonly restaurants: Repository<Restaurant>,
+    @InjectRepository(Category)
+    private readonly categories: Repository<Category>,
+    ) {}
 
-    getAll(): Promise<Restaurant[]>{
-        return this.restaurants.find();
-    }
+    async createRestaurant(
+        owner: User,
+        createRestaurantInput: CreateRestaurantInput
+        ): Promise<CreateRestaurantOutput> {
+            try{
+                const newRestaurant = this.restaurants.create(createRestaurantInput) //create 리턴 타입이 Restaurant
+                // 조건 1: 저장하기전에 완성시키기
+                newRestaurant.owner  = owner;
 
-    createRestaurant(createRestaurantDto: CreateRestaurantDto
-        ): Promise<Restaurant> {
-        //create와 save의 차이점 in TypeORM
-        // create만 하면 객체만 만들 뿐 DB에 저장하진 않는다. 
-        const newRestaurant = this.restaurants.create(createRestaurantDto) //create 리턴 타입이 Restaurant
-        return this.restaurants.save(newRestaurant); //save의 리턴 타입이 Promise
-    }
-    // service와 resolver를 연결하자
-    updateRestaurant({id, data}:UpdateRestaurantDto) {
-        //restaurant repository에서 update method를 사용하자
-        //업뎃하고 싶으면 entity의 field에 보내야 되는데, 그 데이터를 받아야됨
-        return this.restaurants.update(id, {...data});
-    } // id로 객체를 선택 후, data를 object 형태로 받는다. 
-    //하지만 업뎃은 entity가 있던 말던 작동되는지 아닌지 상관하지 않고 업뎃한다
+                // 조건 2: restaurant가 category를 항상 가져야 한다는 조건을 만족시켜준다
+                const categoryName = createRestaurantInput.categoryName.trim().toLowerCase();
+                // slug를 사용해 url이 어떤 것을 의미하는지 보여준다. 빈칸없애고 그안에 - 넣기
+                const categorySlug = categoryName.replace(/ /g, '-');
+                let category = await this.categories.findOne({slug: categorySlug});
+                if(!category) {
+                    category = await this.categories.save(
+                        this.categories.create({
+                            slug: categorySlug,
+                            name: categoryName
+                        }),
+                    )
+                } // 이름은 다르지만, 같은 카테고리를 공유한다
+                newRestaurant.category = category;
+                await this.restaurants.save(newRestaurant); //save의 리턴 타입이 Promise
+                return {
+                    ok:true,
+                    
+                }
+            } catch {
+                return {
+                    ok: false,
+                    error: "Could not create Restaurant"
+                }
+            }
+        } //user가 포함된 restaurant만들기
 }
-//지금 restaurant entity의 respository를 inject하고 있다
-// typescript를 이용해 TypeORM의 DB로 접근한 거다

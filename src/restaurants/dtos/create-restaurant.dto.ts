@@ -1,4 +1,5 @@
-import { InputType, OmitType} from '@nestjs/graphql';
+import { Field, InputType, ObjectType, OmitType, PickType} from '@nestjs/graphql';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Restaurant } from '../entities/restaurant.entity';
 
 // ArgsType - 아래의 정의된 것들을 분리된 argument로써 정의할 수 있다
@@ -6,9 +7,18 @@ import { Restaurant } from '../entities/restaurant.entity';
 
 /* Mapped types를 이용해서 원하는 객체만 받자*/
 @InputType() 
-export class CreateRestaurantDto extends OmitType(Restaurant, ["id"]) {} 
+export class CreateRestaurantInput extends PickType(Restaurant, [
+    "name",
+    "coverImage",
+    "address",
+]) {
+    @Field( type => String)
+    categoryName: string;
+} 
 // restaurant에서 id를 제외한 모든걸 받고 싶다 
 //  GraphQLError: Input Object type createRestaurantDto must define one or more fields.
 // 에러가 나는 이유는 부모(Restaurant)의 타입과 자식(createRestaurantDto)의 타입이 달라서
 // => 추가 Input Type
-// 
+
+@ObjectType()
+export class CreateRestaurantOutput extends CoreOutput {}
