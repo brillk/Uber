@@ -13,6 +13,7 @@ import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { Category } from './restaurants/entities/category.entity';
+import { RestaurantsModule } from './restaurants/restaurants.module';
 
 // 항상 GraphQL을 만들때는 resolvers와 query를 생성해야 한다
 // env파일을 test, production, development로 나눠서 생성
@@ -79,7 +80,7 @@ token(id)을 유저가 볼수도 있다.
       fromEmail:process.env.MAILGUN_FROM_EMAIL,
     }),
     UsersModule, // staic module 어떠한 설정이 되어 있지 않다
-    AuthModule, MailModule,
+    RestaurantsModule,
   ],
   controllers: [],
   providers: [],
