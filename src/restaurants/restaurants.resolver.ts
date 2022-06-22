@@ -1,5 +1,6 @@
 import { Resolver, Args, Mutation } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
+import { Role } from 'src/auth/role.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
 import { Restaurant } from './entities/restaurant.entity';
@@ -12,6 +13,9 @@ export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService){}
   
   @Mutation(returns => CreateRestaurantOutput)
+  //metadata => resolver의 추가로 사용할수 있는 data라는 걸 말하고 
+  //나중에 그걸 접근할 수 있다
+  @Role(["Owner"])
   async createRestaurant(
     @AuthUser() authUser: User, // 로그인된 유저
     @Args('input') createRestaurantInput: CreateRestaurantInput,

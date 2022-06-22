@@ -8,7 +8,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 
-enum UserRole {
+export enum UserRole {
     Client,
     Owner,
     Delivery,
@@ -16,7 +16,7 @@ enum UserRole {
 
 registerEnumType(UserRole, {name: "UserRole"});
 
-//us
+
 @InputType( "UserInputType", {isAbstract: true})
 @ObjectType()
 @Entity()
