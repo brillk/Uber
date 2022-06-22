@@ -1,16 +1,14 @@
 import {Field, InputType, ObjectType} from "@nestjs/graphql";
 import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { CoreEntity } from 'src/common/entities/core.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { Category } from './category.entity';
 
 //restaurant를 위한 object type을 보여준다
 @InputType({isAbstract: true})
 @ObjectType()
 @Entity()
-export class Restaurant {
-
-    @PrimaryGeneratedColumn()
-    @Field(type => Number)
-    id:number;
+export class Restaurant extends CoreEntity {
 
     @Field(type => String)
     @Column()
@@ -18,25 +16,23 @@ export class Restaurant {
     @Length(5)
     name: string;
 
-    @Field(type => Boolean, {nullable: true})
-    @Column({default: true}) // 기본값 설정 그리고 required가 아니다
-    @IsOptional()
-    @IsBoolean()
-    isVegan: boolean;
+    @Field(type => String)
+    @Column()
+    @IsString()
+    coverImage: string;
+
+
 
     @Field(type => String)
     @Column()
     @IsString()
     address: string;
-
-
+    
+    @Field(type => Category)
+    @ManyToOne(type => Category, category => category.restaurants,)
+    category: Category;
 }
-/* code first 접근 방식을 사용하여 TypeScript 클래스를 사용하여 스키마를 정의하고 
-TypeScript 데코레이터를 사용하여 
-해당 클래스의 field에 주석을 추가합니다. 
-
-inputType은 object을 통째로 전달해준다 
-
-Entity를 넣음으로서 클래스하나에 GraphQL 스키마와 
-DB에 저장되는 실제 데이터의 형식을 만들 수 있다.
+/* 
+카테고리는 여러 개의 식당을 가지고, 
+식당은 하나의 카테고리를 가진다.
 */

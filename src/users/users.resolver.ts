@@ -5,7 +5,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateAccountInput, CreateAccountOutput } from './dtos/create-account.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
-import { UserProfileInput, UserProfileOutput } from './dtos/usre-profile.dto';
+import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { VerifyEmailInput, VerifyEmailOutput } from './dtos/verify-email.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';

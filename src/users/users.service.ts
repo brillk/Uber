@@ -7,7 +7,7 @@ import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { JwtService } from 'src/jwt/jwt.service';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
-import { UserProfileOutput } from './dtos/usre-profile.dto';
+import { UserProfileOutput } from './dtos/user-profile.dto';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
 import { MailService } from 'src/mail/mail.service';
 

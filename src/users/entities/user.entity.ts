@@ -5,7 +5,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { BeforeInsert, BeforeUpdate, Column,Entity } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { InternalServerErrorException } from '@nestjs/common';
-import { IsEmail, IsEnum } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 
 enum UserRole {
     Client,
@@ -28,6 +28,7 @@ export class User extends CoreEntity{
     @Column({select: false})
     //현재 암호화된 비밀번호가 또 암호화되고 저장된다..이것을 방지하자
     @Field(type => String)
+    @IsString()
     password: string;
 
     @Column({type: "enum", enum: UserRole})
@@ -37,6 +38,7 @@ export class User extends CoreEntity{
 
     @Column({default: false})
     @Field(type => Boolean)
+    @IsBoolean()
     verified: boolean;
     /* Verification을 통해 그 안에 User에 접근해서 
         User의 emailVerified를 false에서 true로 바꿀 것이기 때문에
