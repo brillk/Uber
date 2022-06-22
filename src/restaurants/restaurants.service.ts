@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
+import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-restaurant.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 
@@ -50,6 +51,15 @@ export class RestaurantService {
                 }
             }
         } //user가 포함된 restaurant만들기
+
+    async editRestaurant(
+        owner: User,
+        editRestaurantInput: EditRestaurantInput,
+        ): Promise<EditRestaurantOutput> {
+            return {
+                ok: true,
+            };
+        }
 }
 
 //role base authentication

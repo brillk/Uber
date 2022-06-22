@@ -3,6 +3,7 @@ import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
+import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-restaurant.dto';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantService } from './restaurants.service';
 
@@ -20,7 +21,17 @@ export class RestaurantResolver {
     @AuthUser() authUser: User, // 로그인된 유저
     @Args('input') createRestaurantInput: CreateRestaurantInput,
     ): Promise<CreateRestaurantOutput> { // 주의: async을 쓸때, Promise와 value를 써야함
-      return this.restaurantService.createRestaurant(authUser, createRestaurantInput);
+      return this.restaurantService.createRestaurant(
+        authUser, 
+        createRestaurantInput);
   }  // 문제: user를 가지고 있는 restaurant를 생성할수 있다. 처음 생성할때 제외시키자
 
+  @Mutation(returns => EditRestaurantOutput)
+  @Role(["Owner"])
+  editRestaurant(
+    @AuthUser() authUser: User,
+    @Args('input') editRestaurantInput:EditRestaurantInput
+  ) : EditRestaurantOutput {
+    return { ok:true, }
+  }
 }

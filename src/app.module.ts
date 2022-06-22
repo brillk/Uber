@@ -58,7 +58,8 @@ token(id)을 유저가 볼수도 있다.
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== "prod",
-      logging: process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
+      logging: 
+        process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
       entities: [User, Verification, Restaurant, Category],
     }), //새로 entity가 생길때마다 추가
     

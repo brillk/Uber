@@ -15,9 +15,6 @@ import { UsersService } from './users.service';
 export class UsersResolver {
 
    constructor( private readonly usersService: UsersService ) {}
-   @Query(returns => Boolean)
-   hi(){ return true;}
-
 
     //첫번째 Mutation
    @Mutation(returns => CreateAccountOutput)
@@ -52,7 +49,9 @@ export class UsersResolver {
 
    @Mutation(returns => EditProfileOutput) 
    @Role(['Any'])
-   async editProfile(@AuthUser() authUser: User, @Args('input') editProfileInput: EditProfileInput
+   async editProfile(
+      @AuthUser() authUser: User, 
+      @Args('input') editProfileInput: EditProfileInput
    ) : Promise<EditProfileOutput> {
       return this.usersService.editProfile(authUser.id, editProfileInput);
    }

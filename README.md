@@ -26,3 +26,17 @@ The Backend of Nuber Clone
 - category
 - address 
 - coverImage
+
+## Restaurant Backend
+
+- Edit Restaurant
+- Delete Restaurant
+
+- See Categories
+- See Restaurants by Category (pagination)
+- See Restaurants (pagination)
+- See Restaurant
+
+- Create Dish
+- Edit Dish
+- Delete Dish
