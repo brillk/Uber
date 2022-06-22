@@ -2,7 +2,7 @@ import {Field, InputType, ObjectType} from "@nestjs/graphql";
 import { IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
 import { Category } from './category.entity';
 
 //restaurant를 위한 object type을 보여준다
@@ -44,6 +44,15 @@ export class Restaurant extends CoreEntity {
         {onDelete: "CASCADE"}
         )
     owner: User;
+
+    /*RelationId 속성에 특정 relation의 id를 로드합니다. 
+    예를 들어 Post 엔터티에 Many-to-one이 있는 경우 
+    새 속성을 @RelationId로 표시하여 새 Relation ID를 가질 수 있습니다. 
+    이 기능은 many-to-many를 포함한 모든 종류의 관계에서 작동합니다.
+    Relation ID는 표현용으로만 사용됩니다. 
+    값을 연결할 때 기본 relation가 추가/제거/변경되지 않습니다. */
+    @RelationId((restaurant: Restaurant) => restaurant.owner)
+    ownerId: number;
 }
 /* 
 카테고리는 여러 개의 식당을 가지고, 
