@@ -79,6 +79,7 @@ token(id)을 유저가 볼수도 있다.
       domain:process.env.MAILGUN_DOMAIN_NAME,
       fromEmail:process.env.MAILGUN_FROM_EMAIL,
     }),
+    AuthModule,
     UsersModule, // staic module 어떠한 설정이 되어 있지 않다
     RestaurantsModule,
   ],

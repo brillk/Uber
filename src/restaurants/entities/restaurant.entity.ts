@@ -22,8 +22,6 @@ export class Restaurant extends CoreEntity {
     @IsString()
     coverImage: string;
 
-
-
     @Field(type => String)
     @Column()
     @IsString()
@@ -42,7 +40,8 @@ export class Restaurant extends CoreEntity {
     @ManyToOne(
         type => User, 
         user => user.restaurants,
-        {onDelete: "CASCADE"})
+        {onDelete: "CASCADE"}
+        )
     owner: User;
 }
 /* 
