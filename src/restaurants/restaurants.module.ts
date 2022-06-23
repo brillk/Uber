@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
+import { CategoryRepository } from './repository/category.repository';
 import { RestaurantResolver } from "./restaurants.resolver";
 import { RestaurantService } from './restaurants.service';
 
+
+//repository를 생성할때마다 service의 type을 바꿔줘야하고,
+// repository를 로드해줘야 한다 inject될 수 있게.
 @Module({
-  imports: [TypeOrmModule.forFeature([Restaurant, Category])], // respository를 import하기
+  imports: [TypeOrmModule.forFeature([Restaurant, CategoryRepository])], // respository를 import하기
   providers: [RestaurantResolver, RestaurantService],
 })
 export class RestaurantsModule {}

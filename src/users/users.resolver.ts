@@ -31,7 +31,7 @@ export class UsersResolver {
 
     //@데코레이터 갖다쓰기
    @Query(returns => User)
-   @Role(["Any"])
+   @Role(['Any'])
    me( @AuthUser() authUser: User) { return authUser; }
 
    /*@UseGuard() (Binding guards)

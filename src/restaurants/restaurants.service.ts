@@ -6,17 +6,17 @@ import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-res
 import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-restaurant.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
+import { CategoryRepository } from './repository/category.repository';
 
 @Injectable()
 export class RestaurantService {
     constructor(
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
-    @InjectRepository(Category)
-    private readonly categories: Repository<Category>,
+    private readonly categories: CategoryRepository,
     ) {}
 
-    async getOrCreateCategory(name:string): Promise<Category>{
+    async getOrCreate(name:string): Promise<Category>{
         const categoryName = name.trim().toLowerCase();
         // slug를 사용해 url이 어떤 것을 의미하는지 보여준다. 빈칸없애고 그안에 - 넣기
         const categorySlug = categoryName.replace(/ /g, '-');
@@ -40,7 +40,7 @@ export class RestaurantService {
                 const newRestaurant = this.restaurants.create(createRestaurantInput) //create 리턴 타입이 Restaurant
                 newRestaurant.owner  = owner;
 
-                const category = await this.getOrCreateCategory(
+                const category = await this.categories.getOrCreate(
                     createRestaurantInput.categoryName,
                 );
 
@@ -79,6 +79,19 @@ export class RestaurantService {
                         error: "You can't edit a restaurant that you don't own",
                     }
                 }
+                let category: Category = null;
+                if (editRestaurantInput.categoryName) {
+                    category = await this.categories.getOrCreate(
+                    editRestaurantInput.categoryName,
+                    );
+                }
+                await this.restaurants.save([
+                    {
+                    id: editRestaurantInput.restaurantId,
+                    ...editRestaurantInput,
+                    ...(category && { category }),
+                    },
+                ]);
                 return {
                     ok: true,
                 };
