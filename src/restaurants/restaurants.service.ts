@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
+import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from './dtos/delete-restaurant.dto';
 import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-restaurant.dto';
@@ -139,6 +140,30 @@ export class RestaurantService {
     // countRestaurant으로 보낸 category에 
     //해당하는 restaurant을 세고 있음
 
+    async findCategoryBySlug({slug}: CategoryInput): Promise<CategoryOutput> {
+        try {
+            const category = await this.categories.findOne(
+                {slug}, 
+                {relations:["restaurants"]},
+                );
+            // if you want to load, need to specify what relation to call
+            if(!category) {
+                return {
+                    ok: false,
+                    error: "Category not found",
+                }
+            }
+            return {
+                ok: true,
+                category,
+            }
+        } catch {
+            return {
+                ok: false,
+                error: "Couldn't load category",
+            }
+        }
+    }
 }
 
 //role base authentication
