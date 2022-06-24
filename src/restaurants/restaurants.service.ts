@@ -132,6 +132,13 @@ export class RestaurantService {
             }
         }
     }
+
+    countRestaurants(category: Category) {
+        return this.restaurants.count({ category });
+    } 
+    // countRestaurant으로 보낸 category에 
+    //해당하는 restaurant을 세고 있음
+
 }
 
 //role base authentication
