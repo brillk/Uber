@@ -16,22 +16,6 @@ export class RestaurantService {
     private readonly categories: CategoryRepository,
     ) {}
 
-    async getOrCreate(name:string): Promise<Category>{
-        const categoryName = name.trim().toLowerCase();
-        // slug를 사용해 url이 어떤 것을 의미하는지 보여준다. 빈칸없애고 그안에 - 넣기
-        const categorySlug = categoryName.replace(/ /g, '-');
-        let category = await this.categories.findOne({slug: categorySlug});
-        if(!category) {
-            category = await this.categories.save(
-                this.categories.create({
-                    slug: categorySlug,
-                    name: categoryName
-                }),
-            )
-        }
-        return category;
-    }
-
     async createRestaurant(
         owner: User,
         createRestaurantInput: CreateRestaurantInput
@@ -85,7 +69,7 @@ export class RestaurantService {
                     editRestaurantInput.categoryName,
                     );
                 }
-                await this.restaurants.save([
+                await this.restaurants.save([ //업뎃을 하려면 배열을 감싸주면 된다
                     {
                     id: editRestaurantInput.restaurantId,
                     ...editRestaurantInput,
