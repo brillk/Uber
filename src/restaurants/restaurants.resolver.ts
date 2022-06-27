@@ -8,7 +8,9 @@ import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from './dtos/delete-restaurant.dto';
 import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-restaurant.dto';
-import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
+import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
+import { RestaurantsOutput } from './dtos/restaurants.dto';
+import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantService } from './restaurants.service';
@@ -51,13 +53,19 @@ export class RestaurantResolver {
       owner, 
       deleteRestaurantInput);
   }
-
   
-  @Query(returns => RestaurantsOutput)
+  @Query(returns => RestaurantOutput)
   restaurants(
-    @Args('input') RestaurantsInput: RestaurantsInput,
+    @Args('input') restaurantsInput: RestaurantInput,
     ): Promise<RestaurantsOutput> {
-      return this.restaurantService.allRestaurants(RestaurantsInput);
+      return this.restaurantService.findRestaurantById(restaurantsInput);
+    }
+
+    @Query(returns => SearchRestaurantOutput)
+    searchRestaurant(
+      @Args('input') searchRestaurantInput: SearchRestaurantInput
+    ): Promise<SearchRestaurantOutput> {
+      return this.restaurantService.searchRestaurantByName(searchRestaurantInput);
     }
     
 }
@@ -74,7 +82,6 @@ export class CategoryResolver {
     //카테고리가 몇개나 있는지 센다
     return this.restaurantService.countRestaurants(category);
   }
-
   
   @Query(type => AllCategoriesOutput)
   allCategories(): Promise<AllCategoriesOutput> {
