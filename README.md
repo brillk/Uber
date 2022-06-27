@@ -38,6 +38,7 @@ The Backend of Nuber Clone
 - See Restaurants by Category (pagination)
 - See Restaurants (pagination)
 - See Restaurant
+- Search Restaurant
 
 - Create Dish
 - Edit Dish

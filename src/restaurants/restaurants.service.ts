@@ -7,6 +7,7 @@ import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from './dtos/delete-restaurant.dto';
 import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-restaurant.dto';
+import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repository/category.repository';
@@ -173,6 +174,28 @@ export class RestaurantService {
                 ok: false,
                 error: "Couldn't load category",
             }
+        }
+    }
+
+    async allRestaurants({ page}: RestaurantsInput,
+    ): Promise<RestaurantsOutput> {
+        try {
+            const [restaurants, totalResults] = await this.restaurants.findAndCount(
+                /* findAndCount()
+                    주어진 기준과 일치하는 모든 엔티티를 카운트하고, 
+                    찾아옵니다. */
+                { skip: (page-1) * 25, take: 25})
+            return {
+                ok: true,
+                results: restaurants,
+                totalPages: Math.ceil(totalResults / 25),
+                totalResults,
+            }
+        } catch {
+            return {
+                ok: false,
+                error: "Couldn't load restaurnats",
+            };
         }
     }
 }
