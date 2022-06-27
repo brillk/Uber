@@ -150,8 +150,9 @@ export class RestaurantService {
                 //이곳에서 모든 relation을 load하는데 300개정도가 있으면
                 // db가 터진다 => pagination을 써서 부분적으로 load하자
                 );
-            // if you want to load, need to specify what relation to call
-            if(!category) {
+
+                if(!category) {
+                // if you want to load, need to specify which relation to call
                 return {
                     ok: false,
                     error: "Category not found",
@@ -183,9 +184,7 @@ export class RestaurantService {
     ): Promise<RestaurantsOutput> {
         try {
             const [restaurants, totalResults] = await this.restaurants.findAndCount(
-                /* findAndCount()
-                    주어진 기준과 일치하는 모든 엔티티를 카운트하고, 
-                    찾아옵니다. */
+                /* findAndCount() 주어진 기준과 일치하는 모든 엔티티를 카운트하고, 찾아옵니다. */
                 { skip: (page-1) * 25, take: 25})
             return {
                 ok: true,
