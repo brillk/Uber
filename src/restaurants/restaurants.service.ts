@@ -12,6 +12,7 @@ import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
 import { Category } from './entities/category.entity';
+import { Dish } from './entities/dish.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repository/category.repository';
 
@@ -20,6 +21,8 @@ export class RestaurantService {
     constructor(
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
+    @InjectRepository(Dish)
+    private readonly dishes: Repository<Dish>,
     private readonly categories: CategoryRepository,
     ) {}
 
@@ -251,8 +254,42 @@ export class RestaurantService {
         }
     }
 
-    async createDish(owner: User, createDishInput: CreateDishInput): Promise<CreateDishOutput> {
-        return
+    async createDish(
+        owner: User, 
+        createDishInput: CreateDishInput
+        ): Promise<CreateDishOutput> {
+        // 1. restaurant를 찾은 후 
+        // 2. owner와 restaurant의 owner가 같은지 확인한다
+        try {
+            const restaurant = await this.restaurants.findOne(
+                createDishInput.restaurantId,
+            );
+    
+            if(!restaurant) {
+                return {
+                    ok: false,
+                    error: "Restaurant not found",
+                }
+            }
+            if(owner.id !== restaurant.ownerId) {
+                return {
+                    ok: false,
+                    error : "You can't do that"
+                }
+            }
+            await this.dishes.save(
+                this.dishes.create({...createDishInput, restaurant})
+            );
+            return {
+                ok: true,
+            }
+        } catch(error) {
+            console.log(error);
+            return {
+                ok: false,
+                error: "Couldn't not create dish",
+            }
+        }
     }
 }
 
