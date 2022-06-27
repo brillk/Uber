@@ -140,11 +140,12 @@ export class RestaurantService {
     // countRestaurant으로 보낸 category에 
     //해당하는 restaurant을 세고 있음
 
-    async findCategoryBySlug({slug}: CategoryInput): Promise<CategoryOutput> {
+    async findCategoryBySlug({slug, page}: CategoryInput): Promise<CategoryOutput> {
         try {
             const category = await this.categories.findOne(
-                {slug}, 
-                {relations:["restaurants"]},
+                {slug},
+                //이곳에서 모든 relation을 load하는데 300개정도가 있으면
+                // db가 터진다 => pagination을 써서 부분적으로 load하자
                 );
             // if you want to load, need to specify what relation to call
             if(!category) {
@@ -153,9 +154,19 @@ export class RestaurantService {
                     error: "Category not found",
                 }
             }
+            const restaurants = await this.restaurants.find({
+                where: {
+                    category, //엔티티를 쿼리할 조건
+                },
+                take: 25, //로드되는 데이터 갯수 받기
+                skip: (page-1) * 25, // page 2로 넘어갈때, page 1에 있던 25개를 스킵
+            });
+            category.restaurants = restaurants;
+            const totalResults = await this.countRestaurants(category);
             return {
                 ok: true,
                 category,
+                totalPages: Math.ceil(totalResults / 25),
             }
         } catch {
             return {
