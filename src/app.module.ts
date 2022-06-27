@@ -17,6 +17,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { Dish } from './restaurants/entities/dish.entity';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
+import { OrderItem } from './orders/entities/order-item.entity';
 
 // 항상 GraphQL을 만들때는 resolvers와 query를 생성해야 한다
 // env파일을 test, production, development로 나눠서 생성
@@ -63,7 +64,7 @@ token(id)을 유저가 볼수도 있다.
       synchronize: process.env.NODE_ENV !== "prod",
       logging: 
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
-      entities: [User, Verification, Restaurant, Category, Dish, Order],
+      entities: [User, Verification, Restaurant, Category, Dish, Order, OrderItem],
     }), //새로 entity가 생길때마다 추가
     
     GraphQLModule.forRoot<ApolloDriverConfig>({ // dynamic module 설정이 되있다

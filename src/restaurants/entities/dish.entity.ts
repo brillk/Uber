@@ -10,14 +10,16 @@ import { Restaurant } from './restaurant.entity';
 
 @InputType( "DishOptionInputType", {isAbstract: true} )
 @ObjectType()
-class DishOption {
-
+export class DishOption {
     @Field(type => String)
     name: string;
     @Field(type => [String])
     choices: string[];
     @Field(type => Int, {nullable: true})
     extra?: number;
+
+    //현재 세세한 주문(옵션)을 하고 나서 저장할 model이 없다
+    // user.dish or user.choice.property를 저장해야 한다
 }
 
 @InputType( "DishInputType", {isAbstract: true} )
