@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { Like, Repository } from 'typeorm';
+import { ILike, Like, Raw, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
@@ -230,9 +230,17 @@ export class RestaurantService {
         try {
             const [restaurants, totalResults] = await this.restaurants.findAndCount({
                 where: {
-                    name: Like(`%${query}%`),
-                }
+                    name: Raw(name => `${name} ILIKE '%${query}%'`), //ILIKE 대소문자 상관없이
+                }, 
+                skip: (page-1) * 25, 
+                take: 25
             });
+            return {
+                ok: true,
+                restaurants,
+                totalResults,
+                totalPages: Math.ceil(totalResults / 25),
+            }
             // 식당을 찾을때 findAndCount 
         } catch {
             return {

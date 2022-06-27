@@ -40,6 +40,13 @@ The Backend of Nuber Clone
 - See Restaurant
 - Search Restaurant
 
+## Ordering Food
+
 - Create Dish
 - Edit Dish
 - Delete Dish
+
+- Order CRUD
+- Orders Subscription (Owner, Customer, Delive
+
+- Payments (CRON)
