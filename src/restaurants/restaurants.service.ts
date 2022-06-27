@@ -299,8 +299,9 @@ export class RestaurantService {
         editDishInput: EditDishInput
         ): Promise<EditDishOutput>{
             try {
-                const dish = await this.dishes.findOne(editDishInput.dishId, {
-                    relations:["restaurant"]});
+                const dish = await this.dishes.findOne(
+                    editDishInput.dishId, {relations:["restaurant"]});
+
                 if(!dish) {
                     return {
                         ok: false,
