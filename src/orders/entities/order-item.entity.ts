@@ -12,7 +12,7 @@ export class OrderItemOption {
     choice?: DishChoice[];
     @Field(type => Int, {nullable: true})
     extra?: number;
-
+ 
 }
 
 
