@@ -5,8 +5,15 @@ import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
 import { Category } from './category.entity';
 import { Restaurant } from './restaurant.entity';
 
+@InputType( "DishChoiceInputType", {isAbstract: true} )
+@ObjectType()
+export class DishChoice {
+    @Field(type => String)
+    name: string;
+    @Field(type => Int, {nullable: true})
+    extra?: number;
 
-// 현재 어떤 옵션으로 
+}
 
 @InputType( "DishOptionInputType", {isAbstract: true} )
 @ObjectType()
