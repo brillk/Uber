@@ -106,8 +106,8 @@ describe("UsersService", () => {
             usersRepository.create.mockReturnValue(createAccountArgs); 
             usersRepository.save.mockResolvedValue(createAccountArgs);
 
-            verificationsRepository.create.mockReturnValue(
-                {user: createAccountArgs
+            verificationsRepository.create.mockReturnValue({
+                user: createAccountArgs
             });
 
             verificationsRepository.save.mockResolvedValue({
@@ -148,7 +148,6 @@ describe("UsersService", () => {
             expect(result).toEqual({ok: false, error: "Couldn't create account"});
         });
     });
-
 
     describe('login', () => {
 
@@ -292,7 +291,6 @@ describe("UsersService", () => {
             expect(result).toEqual({ok: false, error: 'Could not update Profile'});
         })
     });
-
 
     describe('verifyEmail', () => {
         

@@ -47,6 +47,5 @@ The Backend of Nuber Clone
 - Delete Dish
 
 - Order CRUD
-- Orders Subscription (Owner, Customer, Delive
-
+- Orders Subscription (Owner, Customer, Delivery)
 - Payments (CRON)
