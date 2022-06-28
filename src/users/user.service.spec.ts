@@ -295,6 +295,7 @@ describe("UsersService", () => {
 
 
     describe('verifyEmail', () => {
+        
         it("should verify email", async () => {
             const mockedVerification = {
                 user: {
