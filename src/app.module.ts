@@ -72,11 +72,10 @@ token(id)을 유저가 볼수도 있다.
       installSubscriptionHandlers: true, 
       autoSchemaFile: true,
       context: ({req, connection}) => {
-        if(req) {
-          return {user: req['user']};
-        } else {
-          
-        }
+        const TOKEN_KEY = 'x-jwt';
+        return {
+          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+        };
       },
       /*Context
           각 request에 대해 request context를 사용할 수 있습니다. 
@@ -99,10 +98,5 @@ token(id)을 유저가 볼수도 있다.
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule{
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-    .apply(JwtMiddleware)
-    .forRoutes({path: '/graphql', method: RequestMethod.POST});
-  }
-}
+
+export class AppModule {}
