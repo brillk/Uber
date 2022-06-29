@@ -8,6 +8,4 @@ export class DeleteDishInput {
 }
 
 @ObjectType()
-export class DeleteDishOutput extends CoreOutput {
-
-}
+export class DeleteDishOutput extends CoreOutput {}

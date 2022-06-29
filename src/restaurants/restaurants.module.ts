@@ -14,7 +14,7 @@ import { RestaurantService } from './restaurants.service';
   providers: [
     RestaurantResolver, 
     CategoryResolver,
-    DishResolver, 
+    DishResolver,   
     RestaurantService],
 })
 export class RestaurantsModule {}

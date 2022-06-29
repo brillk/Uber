@@ -69,8 +69,11 @@ token(id)을 유저가 볼수도 있다.
     
     GraphQLModule.forRoot<ApolloDriverConfig>({ // dynamic module 설정이 되있다
       driver: ApolloDriver,
+      installSubscriptionHandlers: true, 
       autoSchemaFile: true,
-      context: ({req}) => ({user: req['user']}),
+      context: ({req}) => {
+        return {user: req['user']}
+      },
       /*Context
           각 request에 대해 request context를 사용할 수 있습니다. 
           context가 함수로 정의되면 각 request마다 호출되고
@@ -86,7 +89,8 @@ token(id)을 유저가 볼수도 있다.
     }),
     AuthModule,
     UsersModule, // staic module 어떠한 설정이 되어 있지 않다
-    RestaurantsModule, OrdersModule,
+    RestaurantsModule, 
+    OrdersModule,
   ],
   controllers: [],
   providers: [],

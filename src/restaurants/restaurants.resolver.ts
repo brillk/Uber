@@ -12,7 +12,7 @@ import { DeleteRestaurantInput, DeleteRestaurantOutput } from './dtos/delete-res
 import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto';
 import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-restaurant.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
-import { RestaurantsOutput } from './dtos/restaurants.dto';
+import { RestaurantsOutput, RestaurantsInput } from './dtos/restaurants.dto';
 import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
 import { Category } from './entities/category.entity';
 import { Dish } from './entities/dish.entity';
@@ -55,14 +55,22 @@ export class RestaurantResolver {
   ): Promise<DeleteRestaurantOutput> {
     return this.restaurantService.deleteRestaurant(
       owner, 
-      deleteRestaurantInput);
+      deleteRestaurantInput
+      );
   }
   
-  @Query(returns => RestaurantOutput)
+  @Query(returns => RestaurantsOutput)
   restaurants(
-    @Args('input') restaurantsInput: RestaurantInput,
+    @Args('input') restaurantsInput: RestaurantsInput,
     ): Promise<RestaurantsOutput> {
-      return this.restaurantService.findRestaurantById(restaurantsInput);
+      return this.restaurantService.allRestaurants(restaurantsInput);
+    }
+
+  @Query(returns => RestaurantOutput)
+  restaurant(
+    @Args('input') restaurantInput: RestaurantInput,
+    ): Promise<RestaurantOutput> {
+      return this.restaurantService.findRestaurantById(restaurantInput);
     }
 
     @Query(returns => SearchRestaurantOutput)
@@ -94,7 +102,8 @@ export class CategoryResolver {
 
   @Query(type=>CategoryOutput)
   category(
-    @Args('input') categoryInput: CategoryInput): Promise<CategoryOutput> {
+    @Args('input') categoryInput: CategoryInput
+    ): Promise<CategoryOutput> {
     return this.restaurantService.findCategoryBySlug(categoryInput);
   }
 }
@@ -107,9 +116,9 @@ export class DishResolver {
   @Role(["Owner"]) //owner만 접근 가능
   createDish(
     @AuthUser() owner:User, 
-    @Args('input') CreateDishInput: CreateDishInput
+    @Args('input') createDishInput: CreateDishInput
     ): Promise<CreateDishOutput> {
-      return this.restaurantService.createDish(owner, CreateDishInput);
+      return this.restaurantService.createDish(owner, createDishInput);
     }
 
   @Mutation(type => EditDishOutput)

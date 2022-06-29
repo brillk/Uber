@@ -2,7 +2,6 @@ import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { IsNumber, IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
-import { Category } from './category.entity';
 import { Restaurant } from './restaurant.entity';
 
 @InputType( "DishChoiceInputType", {isAbstract: true} )
@@ -69,7 +68,7 @@ export class Dish extends CoreEntity {
 
 
     //dish는 다른 데이터 타입으로 저장
-    @Field(type => [DishOption])
-    @Column({type: "json"})
-    options: DishOption[]
+    @Field(type => [DishOption], {nullable: true})
+    @Column({type: "json", nullable: true})
+    options?: DishOption[]
 }

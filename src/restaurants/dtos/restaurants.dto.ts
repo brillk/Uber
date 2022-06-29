@@ -3,9 +3,7 @@ import { PaginationInput, PaginationOutput } from 'src/common/dtos/pagination.dt
 import { Restaurant } from '../entities/restaurant.entity';
 
 @InputType()
-export class RestaurantsInput extends PaginationInput {
-    
-}
+export class RestaurantsInput extends PaginationInput {}
 
 
 @ObjectType()

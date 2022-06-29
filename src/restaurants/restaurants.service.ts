@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { ILike, Like, Raw, Repository } from 'typeorm';
+import { Raw, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
@@ -61,8 +61,8 @@ export class RestaurantService {
             
             try {
                 const restaurant  = await this.restaurants.findOne(
-                    editRestaurantInput.restaurantId, 
-                    {loadRelationIds: true}); // owner와 같은 사람인지 확인
+                    editRestaurantInput.restaurantId);
+
                 if(!restaurant) {
                     return {
                         ok: false,
@@ -94,19 +94,18 @@ export class RestaurantService {
             } catch {
                 return {
                     ok: false,
-                    error: ""
+                    error: "Could not edit Restaurant"
                 }
             }
         }
 
-        async deleteRestaurant(
+    async deleteRestaurant(
             owner: User, 
-            {restaurantId}: DeleteRestaurantInput,
+            { restaurantId }: DeleteRestaurantInput,
             ): Promise<DeleteRestaurantOutput> {
                 try {
-                    const restaurant  = await this.restaurants.findOne(
-                        restaurantId, 
-                        );
+                    const restaurant  = await this.restaurants.findOne(restaurantId);
+                    
                     if(!restaurant) {
                         return {
                             ok: false,
@@ -120,13 +119,16 @@ export class RestaurantService {
                         }
                     }
                     await this.restaurants.delete(restaurantId);
+                    return {
+                        ok: true,
+                    }
                 } catch {
                     return {
                         ok: false,
                         error: "Couldn't delete"
                     }
                 }
-            }
+        }
 
     async allCategories(): Promise<AllCategoriesOutput> {
         try {
@@ -151,12 +153,10 @@ export class RestaurantService {
 
     async findCategoryBySlug({slug, page}: CategoryInput): Promise<CategoryOutput> {
         try {
-            const category = await this.categories.findOne(
-                {slug},
+            const category = await this.categories.findOne({slug});
                 //이곳에서 모든 relation을 load하는데 300개정도가 있으면
                 // db가 터진다 => pagination을 써서 부분적으로 load하자
-                );
-
+                
                 if(!category) {
                 // if you want to load, need to specify which relation to call
                 return {
@@ -171,10 +171,10 @@ export class RestaurantService {
                 take: 25, //로드되는 데이터 갯수 받기
                 skip: (page-1) * 25, // page 2로 넘어갈때, page 1에 있던 25개를 스킵
             });
-            category.restaurants = restaurants;
             const totalResults = await this.countRestaurants(category);
             return {
                 ok: true,
+                restaurants,
                 category,
                 totalPages: Math.ceil(totalResults / 25),
             }
@@ -294,6 +294,8 @@ export class RestaurantService {
         }
     }
 
+    async checkDishOwner(ownerId: number, dishId: number) {}
+
     async editDish(
         owner: User, 
         editDishInput: EditDishInput
@@ -336,7 +338,8 @@ export class RestaurantService {
         ): Promise<DeleteDishOutput>{
             try {
                 const dish = await this.dishes.findOne(dishId, {
-                    relations:["restaurant"]});
+                    relations:["restaurant"]
+                    });
                 if(!dish) {
                     return {
                         ok: false,
@@ -351,6 +354,9 @@ export class RestaurantService {
                     }
                 }
                 await this.dishes.delete(dishId);
+                return {
+                    ok: true,
+                }
         } catch {
             return {
                 ok: false,
