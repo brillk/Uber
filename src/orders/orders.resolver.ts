@@ -1,7 +1,9 @@
+import { Inject } from '@nestjs/common';
 import { Args, Mutation, Resolver,Query, Subscription} from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
+import { PUB_SUB } from 'src/common/common.constants';
 import { User } from 'src/users/entities/user.entity';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
@@ -10,7 +12,6 @@ import { GetOrdersOutput, GetOrdersInput } from './dtos/get-orders.dto';
 import { Order } from './entities/order.entity';
 import { OrderService } from './orders.service';
 
-const pubsub = new PubSub();
 
 /*
 GraphQL subscriptions은 GraphQL에서 subscriptions을 구현하기 위해 
@@ -20,7 +21,11 @@ Redis와 같은 pubsub 시스템과 GraphQL을 연결할 수 있는 간단한 np
 
 @Resolver(of => Order)
 export class OrderResolver {
-    constructor(private readonly ordersService: OrderService) {}
+    constructor(
+        private readonly ordersService: OrderService,
+        @Inject(PUB_SUB) private readonly pubSub: PubSub,
+        // inject으로 pub_sub을 붙인다
+        ) {}
 
     @Mutation(returns => CreateOrderOutput)
     @Role(["Client"])
@@ -64,7 +69,7 @@ export class OrderResolver {
 
     @Mutation(returns => Boolean) 
     potato() {
-        pubsub.publish('hotchop', {
+        this.pubSub.publish('hotchop', {
             hot: "My hotness"
         });
         return true;
@@ -74,6 +79,6 @@ export class OrderResolver {
     @Subscription(returns => String)
     @Role(['Any'])
     hot(@AuthUser() user: User) {
-        return pubsub.asyncIterator('hotchop');
+        return this.pubSub.asyncIterator('hotchop');
     }
 }

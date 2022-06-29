@@ -18,6 +18,7 @@ import { Dish } from './restaurants/entities/dish.entity';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
+import { CommonModule } from './common/common.module';
 
 // 항상 GraphQL을 만들때는 resolvers와 query를 생성해야 한다
 // env파일을 test, production, development로 나눠서 생성
@@ -94,6 +95,7 @@ token(id)을 유저가 볼수도 있다.
     UsersModule, // staic module 어떠한 설정이 되어 있지 않다
     RestaurantsModule, 
     OrdersModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],

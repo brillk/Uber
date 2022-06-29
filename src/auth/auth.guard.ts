@@ -49,3 +49,8 @@ export class AuthGuard implements CanActivate {
 next() 함수를 호출한 후 어떤 핸들러가 실행될지 모릅니다.
 4. Guards는 ExecutionContext 인스턴스에 액세스할 수 있으므로 다음에 실행될 항목을 정확히 알고 있습니다.
 토큰을 추출 및 검증하고 추출된 정보를 사용하여 요청을 진행할 수 있는지 여부를 결정합니다. */
+
+
+/*
+    현재 query, mutation 등 다양한 곳에서 http와 websocket을 이용해서 인증을 할 수 있다
+*/
