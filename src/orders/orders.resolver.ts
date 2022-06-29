@@ -72,7 +72,8 @@ export class OrderResolver {
     }
     
     @Subscription(returns => String)
-    hot() {
+    @Role(['Any'])
+    hot(@AuthUser() user: User) {
         return pubsub.asyncIterator('hotchop');
     }
 }

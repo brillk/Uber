@@ -71,8 +71,12 @@ token(id)을 유저가 볼수도 있다.
       driver: ApolloDriver,
       installSubscriptionHandlers: true, 
       autoSchemaFile: true,
-      context: ({req}) => {
-        return {user: req['user']}
+      context: ({req, connection}) => {
+        if(req) {
+          return {user: req['user']};
+        } else {
+          
+        }
       },
       /*Context
           각 request에 대해 request context를 사용할 수 있습니다. 

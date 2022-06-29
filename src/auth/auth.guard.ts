@@ -1,12 +1,18 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { JwtService } from 'src/jwt/jwt.service';
 import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
 import { AllowedRoles } from './role.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    constructor(private readonly reflector: Reflector){}
+    constructor(
+        private readonly reflector: Reflector,
+        private readonly jwtService: JwtService,
+        private readonly userService: UsersService,
+    ){}
     canActivate(context: ExecutionContext) {
     const roles = this.reflector.get<AllowedRoles>(
         'roles', 
