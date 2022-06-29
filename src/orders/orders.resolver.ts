@@ -61,8 +61,18 @@ export class OrderResolver {
             return this.ordersService.editOrder(user, editOrderInput);
         }
     
+
+    @Mutation(returns => Boolean) 
+    potato() {
+        pubsub.publish('hotchop', {
+            hot: "My hotness"
+        });
+        return true;
+        //asyncIterator를 발생시킨다
+    }
+    
     @Subscription(returns => String)
     hot() {
-        return pubsub.asyncIterator('hot');
+        return pubsub.asyncIterator('hotchop');
     }
 }
